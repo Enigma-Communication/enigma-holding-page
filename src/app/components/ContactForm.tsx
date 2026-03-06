@@ -242,6 +242,7 @@ export function ContactForm({
           id="contact-form"
           name="contact"
           method="POST"
+          action="/"
           data-netlify="true"
           netlify-honeypot="bot-field"
           onSubmit={handleSubmit}
