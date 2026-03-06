@@ -29,6 +29,11 @@ const EMPTY_FORM: FormData = {
   message: '',
 };
 
+const encode = (data: Record<string, string>) =>
+  Object.entries(data)
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+
 const ENQUIRY_OPTIONS = [
   'Creative Agency',
   'Brand Design',
@@ -118,7 +123,7 @@ export function ContactForm({
     return localLocation;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const location = getSelectedLocation();
@@ -133,23 +138,51 @@ export function ContactForm({
 
     setFormError('');
 
-    console.log('Form submitted:', { ...formData, location });
+    const payload = {
+      'form-name': 'contact',
+      'bot-field': '',
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      enquiryType: formData.enquiryType,
+      message: formData.message,
+      location,
+    };
 
-    // Show success message, then fade back to the form
-    setSubmitState('success');
-    window.setTimeout(() => {
-      setSubmitState('idle');
-    }, 2500);
+    try {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: encode(payload),
+      });
 
-    // Optional: clear form after submit
-    resetForm();
+      if (!response.ok) {
+        throw new Error('Netlify form submission failed');
+      }
 
-    // Clear selected location too (respect parent-controlled mode)
-    if (onToggleLocation) {
-      onToggleLocation('');
-    } else {
-      setLocalLocation('');
-      broadcastLocation('');
+      console.log('Form submitted:', payload);
+
+      // Show success message, then fade back to the form
+      setSubmitState('success');
+      window.setTimeout(() => {
+        setSubmitState('idle');
+      }, 2500);
+
+      // Clear form after submit
+      resetForm();
+
+      // Clear selected location too (respect parent-controlled mode)
+      if (onToggleLocation) {
+        onToggleLocation('');
+      } else {
+        setLocalLocation('');
+        broadcastLocation('');
+      }
+    } catch (error) {
+      console.error(error);
+      setFormError('Something went wrong. Please try again.');
     }
   };
 
@@ -205,7 +238,20 @@ export function ContactForm({
         </div>
 
         {/* Right Column - Form */}
-        <form id="contact-form" onSubmit={handleSubmit} className="space-y-6 md:space-y-8" onFocus={handleFocus} onBlur={handleBlur}>
+        <form
+          id="contact-form"
+          name="contact"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+          onSubmit={handleSubmit}
+          className="space-y-6 md:space-y-8"
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+        >
+          <input type="hidden" name="form-name" value="contact" />
+          <input type="hidden" name="bot-field" value="" />
+          <input type="hidden" name="location" value={getSelectedLocation()} />
           {submitState === 'success' ? (
             <motion.div
               key="success"
@@ -378,6 +424,8 @@ export function ContactForm({
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
+                  name="locationOption"
+                  value="Sydney"
                   checked={isChecked('Sydney')}
                   onChange={() => handleCheckboxChange('Sydney')}
                   className="w-4 h-4 cursor-pointer"
@@ -393,6 +441,8 @@ export function ContactForm({
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
+                  name="locationOption"
+                  value="Newcastle"
                   checked={isChecked('Newcastle')}
                   onChange={() => handleCheckboxChange('Newcastle')}
                   className="w-4 h-4 cursor-pointer"
@@ -408,6 +458,8 @@ export function ContactForm({
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
+                  name="locationOption"
+                  value="Brisbane"
                   checked={isChecked('Brisbane')}
                   onChange={() => handleCheckboxChange('Brisbane')}
                   className="w-4 h-4 cursor-pointer"
