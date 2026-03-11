@@ -51,8 +51,6 @@ const colorSchemes: ColorScheme[] = [
 
 const heroInfoMonoFont = "'OCR-B', 'OCR B', 'Courier Prime', monospace";
 const heroDisplayFont = "'Enigma-EnigmaLargeRoman', serif";
-const cursorGrowEase = [0.15, 0.78, 0.72, 1] as const;
-const cursorShrinkEase = [0.25, 0.1, 0.25, 1] as const;
 const heroHeadingWrapClass = 'text-center mt-16 md:mt-32 lg:mt-36';
 const heroHeadingClass =
   'mx-auto max-w-[88vw] sm:max-w-[90vw] md:max-w-[94vw] text-[2.65rem] sm:text-[3.75rem] md:text-[5.9rem] lg:text-[6.9rem] xl:text-[8rem] 2xl:text-[9.4rem] tracking-tight leading-[0.86] mb-5 md:mb-6';
@@ -107,13 +105,10 @@ export default function App() {
   const [showShowcase, setShowShowcase] = useState(false);
   const [hasDesktopLens, setHasDesktopLens] = useState(false);
   const [currentSchemeIndex, setCurrentSchemeIndex] = useState(0);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isIdle, setIsIdle] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isHeroButtonActive, setIsHeroButtonActive] = useState(false);
   const [isSubmitButtonActive, setIsSubmitButtonActive] = useState(false);
   const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
-  const [scrollY, setScrollY] = useState(0);
 
   // Shared form state (keeps the main layer + preview layer perfectly in sync)
   const [formValues, setFormValues] = useState({
@@ -156,11 +151,15 @@ export default function App() {
   const SMALL_RADIUS = 10;
   const LARGE_RADIUS = 860;
   const IDLE_DELAY_MS = 180;
-  const [lensRadius, setLensRadius] = useState(SMALL_RADIUS);
 
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const contactRef = useRef<HTMLDivElement>(null);
+  const previewMaskRef = useRef<HTMLDivElement>(null);
+  const previewContentRef = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const lastPointerRef = useRef({ x: 0, y: 0 });
+  const lensRadiusRef = useRef(SMALL_RADIUS);
 
   // Check URL for showcase mode
   useEffect(() => {
@@ -328,10 +327,56 @@ export default function App() {
   const currentScheme = colorSchemes[currentSchemeIndex];
   const nextScheme = colorSchemes[(currentSchemeIndex + 1) % colorSchemes.length];
 
+  const getLensTransition = (idle: boolean) =>
+    idle
+      ? 'clip-path 1.34s cubic-bezier(0.15, 0.78, 0.72, 1), background-color 0.5s ease-out'
+      : 'clip-path 0.22s ease-out, background-color 0.5s ease-out';
+
+  const getCursorTransition = (idle: boolean) =>
+    idle
+      ? 'width 1.34s cubic-bezier(0.15, 0.78, 0.72, 1), height 1.34s cubic-bezier(0.15, 0.78, 0.72, 1)'
+      : 'width 0.22s ease-out, height 0.22s ease-out';
+
+  const syncLensPosition = (x: number, y: number) => {
+    lastPointerRef.current = { x, y };
+
+    if (previewMaskRef.current) {
+      previewMaskRef.current.style.clipPath = `circle(${Math.round(lensRadiusRef.current)}px at ${x}px ${y}px)`;
+    }
+
+    if (cursorRef.current) {
+      cursorRef.current.style.left = `${x}px`;
+      cursorRef.current.style.top = `${y}px`;
+    }
+  };
+
+  const syncLensRadius = (radius: number, idle: boolean) => {
+    lensRadiusRef.current = radius;
+
+    const { x, y } = lastPointerRef.current;
+
+    if (previewMaskRef.current) {
+      previewMaskRef.current.style.transition = getLensTransition(idle);
+      previewMaskRef.current.style.clipPath = `circle(${Math.round(radius)}px at ${x}px ${y}px)`;
+    }
+
+    if (cursorRef.current) {
+      const diameter = `${Math.round(radius * 2)}px`;
+      cursorRef.current.style.transition = getCursorTransition(idle);
+      cursorRef.current.style.width = diameter;
+      cursorRef.current.style.height = diameter;
+    }
+  };
+
+  const syncPreviewScroll = () => {
+    if (previewContentRef.current) {
+      previewContentRef.current.style.transform = `translateY(-${window.scrollY}px)`;
+    }
+  };
+
   useEffect(() => {
     if (!hasDesktopLens) {
-      setIsIdle(false);
-      setLensRadius(SMALL_RADIUS);
+      lensRadiusRef.current = SMALL_RADIUS;
       return;
     }
 
@@ -343,9 +388,8 @@ export default function App() {
     const handleMouseMove = (e: MouseEvent) => {
       const { x, y } = clampToViewport(e.clientX, e.clientY);
 
-      setMousePosition({ x, y });
-      setIsIdle(false);
-      setLensRadius(SMALL_RADIUS);
+      syncLensPosition(x, y);
+      syncLensRadius(SMALL_RADIUS, false);
 
       // If the cursor is over the form, keep the lens small (no idle expansion)
       const el = document.elementFromPoint(x, y) as HTMLElement | null;
@@ -366,20 +410,23 @@ export default function App() {
         // If the cursor ended up over the form, still do not expand
         if (isOverFormRef.current) return;
 
-        setIsIdle(true);
-        setLensRadius(LARGE_RADIUS);
+        syncLensRadius(LARGE_RADIUS, true);
       }, IDLE_DELAY_MS);
     };
 
     const handleMouseOut = (e: MouseEvent) => {
       if (e.relatedTarget || (e as MouseEvent & { toElement?: EventTarget | null }).toElement) return;
       const { x, y } = clampToViewport(e.clientX, e.clientY);
-      setMousePosition({ x, y });
+      syncLensPosition(x, y);
     };
 
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
+    const handleScroll = () => syncPreviewScroll();
+
+    const initialX = window.innerWidth / 2;
+    const initialY = window.innerHeight / 2;
+    syncLensPosition(initialX, initialY);
+    syncLensRadius(SMALL_RADIUS, false);
+    syncPreviewScroll();
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseout', handleMouseOut);
@@ -412,7 +459,7 @@ export default function App() {
     const nextClickPosition =
       clientX || clientY
         ? { x: clientX, y: clientY }
-        : { x: mousePosition.x, y: mousePosition.y };
+        : lastPointerRef.current;
 
     setClickPosition(nextClickPosition);
     setIsTransitioning(true);
@@ -611,18 +658,20 @@ export default function App() {
         <>
           {/* Unified Preview Layer - Next Color Scheme with Cursor Mask */}
           <div
+            ref={previewMaskRef}
             className="fixed inset-0 z-20 pointer-events-none"
             style={{
-              clipPath: `circle(${Math.round(lensRadius)}px at ${mousePosition.x}px ${mousePosition.y}px)`,
               backgroundColor: nextScheme.bg,
-              transition: isIdle
-                ? 'clip-path 1.34s cubic-bezier(0.15, 0.78, 0.72, 1), background-color 0.5s ease-out'
-                : 'clip-path 0.22s ease-out, background-color 0.5s ease-out',
+              clipPath: 'circle(0px at 0px 0px)',
+              transition: getLensTransition(false),
+              willChange: 'clip-path',
             }}
           >
             <div
+              ref={previewContentRef}
               style={{
-                transform: `translateY(-${scrollY}px)`,
+                transform: 'translateY(0px)',
+                willChange: 'transform',
               }}
             >
               {/* Hero Section Preview */}
@@ -742,23 +791,18 @@ export default function App() {
 
           <AnimatePresence>
             {!isTransitioning && (
-              <motion.div
+              <div
+                ref={cursorRef}
                 className="fixed pointer-events-none z-50 rounded-full"
                 style={{
-                  left: mousePosition.x,
-                  top: mousePosition.y,
                   border: `2px solid ${nextScheme.text}`,
-                  x: '-50%',
-                  y: '-50%',
-                }}
-                initial={{ width: 120, height: 120 }}
-                animate={{
-                  width: Math.round(lensRadius * 2),
-                  height: Math.round(lensRadius * 2),
-                }}
-                transition={{
-                  duration: isIdle ? 1.34 : 0.22,
-                  ease: isIdle ? cursorGrowEase : cursorShrinkEase,
+                  left: '0px',
+                  top: '0px',
+                  width: `${SMALL_RADIUS * 2}px`,
+                  height: `${SMALL_RADIUS * 2}px`,
+                  transform: 'translate(-50%, -50%)',
+                  transition: getCursorTransition(false),
+                  willChange: 'width, height',
                 }}
               />
             )}
