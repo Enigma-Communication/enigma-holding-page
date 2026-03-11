@@ -105,6 +105,7 @@ function Footer({ textColor }: { textColor: string }) {
 
 export default function App() {
   const [showShowcase, setShowShowcase] = useState(false);
+  const [hasDesktopLens, setHasDesktopLens] = useState(false);
   const [currentSchemeIndex, setCurrentSchemeIndex] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isIdle, setIsIdle] = useState(false);
@@ -167,6 +168,22 @@ export default function App() {
     if (params.get('showcase') === 'true') {
       setShowShowcase(true);
     }
+  }, []);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const updateHasDesktopLens = () => setHasDesktopLens(mediaQuery.matches);
+
+    updateHasDesktopLens();
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', updateHasDesktopLens);
+      return () => mediaQuery.removeEventListener('change', updateHasDesktopLens);
+    }
+
+    mediaQuery.addListener(updateHasDesktopLens);
+
+    return () => mediaQuery.removeListener(updateHasDesktopLens);
   }, []);
 
   useEffect(() => {
@@ -312,6 +329,12 @@ export default function App() {
   const nextScheme = colorSchemes[(currentSchemeIndex + 1) % colorSchemes.length];
 
   useEffect(() => {
+    if (!hasDesktopLens) {
+      setIsIdle(false);
+      setLensRadius(SMALL_RADIUS);
+      return;
+    }
+
     const clampToViewport = (x: number, y: number) => ({
       x: Math.max(0, Math.min(x, window.innerWidth)),
       y: Math.max(0, Math.min(y, window.innerHeight)),
@@ -368,23 +391,30 @@ export default function App() {
       window.removeEventListener('scroll', handleScroll);
       if (idleTimerRef.current) {
         clearTimeout(idleTimerRef.current);
+        idleTimerRef.current = null;
       }
     };
-  }, []);
+  }, [hasDesktopLens]);
 
   const handleClick = (e: React.MouseEvent) => {
-    // Don't trigger the colour transition when interacting with the form fields/buttons
+    // Don't trigger the colour transition when interacting with links or form controls.
     const target = e.target as HTMLElement | null;
     if (target) {
-      const isFormInteraction = !!target.closest(
-        '#contact form, #contact input, #contact textarea, #contact select, #contact button, #contact label'
+      const isInteractiveElement = !!target.closest(
+        'a, button, input, textarea, select, label, [role="button"], [role="link"]'
       );
-      if (isFormInteraction) return;
+      if (isInteractiveElement) return;
     }
 
     if (isTransitioning) return;
 
-    setClickPosition({ x: mousePosition.x, y: mousePosition.y });
+    const { clientX, clientY } = e;
+    const nextClickPosition =
+      clientX || clientY
+        ? { x: clientX, y: clientY }
+        : { x: mousePosition.x, y: mousePosition.y };
+
+    setClickPosition(nextClickPosition);
     setIsTransitioning(true);
 
     setTimeout(() => {
@@ -425,7 +455,9 @@ export default function App() {
 
   return (
     <div
-      className="relative w-full min-h-screen overflow-y-auto overflow-x-hidden cursor-none transition-colors duration-500 ease-out"
+      className={`relative w-full min-h-screen overflow-y-auto overflow-x-hidden transition-colors duration-500 ease-out ${
+        hasDesktopLens ? 'cursor-none' : ''
+      }`}
       style={{ backgroundColor: currentScheme.bg }}
       onClick={handleClick}
     >
@@ -575,164 +607,164 @@ export default function App() {
       </div>
       <Footer textColor={currentScheme.text} />
 
-      {/* Unified Preview Layer - Next Color Scheme with Cursor Mask */}
-      <div 
-        className="fixed inset-0 z-20 pointer-events-none"
-        style={{
-          clipPath: `circle(${Math.round(lensRadius)}px at ${mousePosition.x}px ${mousePosition.y}px)`,
-          backgroundColor: nextScheme.bg,
-          transition: isIdle
-            ? 'clip-path 1.34s cubic-bezier(0.15, 0.78, 0.72, 1), background-color 0.5s ease-out'
-            : 'clip-path 0.22s ease-out, background-color 0.5s ease-out',
-        }}
-      >
-        <div 
-          style={{
-            transform: `translateY(-${scrollY}px)`,
-          }}
-        >
-          {/* Hero Section Preview */}
-          <div className="h-screen flex flex-col">
-            <div className="relative flex flex-col items-center justify-center h-full px-4 md:px-8">
-              {/* Date and Tagline - Preview */}
-              <div className="absolute top-4 md:top-8 left-4 md:left-8 right-4 md:right-8">
-                <div className="hidden md:grid grid-cols-3 items-start">
-                  <span
-                    className="tracking-wider md:text-[37px] transition-colors duration-500 ease-out"
-                    style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
-                  >
-                    {LAUNCH_DATE_LABEL}
-                  </span>
+      {hasDesktopLens ? (
+        <>
+          {/* Unified Preview Layer - Next Color Scheme with Cursor Mask */}
+          <div
+            className="fixed inset-0 z-20 pointer-events-none"
+            style={{
+              clipPath: `circle(${Math.round(lensRadius)}px at ${mousePosition.x}px ${mousePosition.y}px)`,
+              backgroundColor: nextScheme.bg,
+              transition: isIdle
+                ? 'clip-path 1.34s cubic-bezier(0.15, 0.78, 0.72, 1), background-color 0.5s ease-out'
+                : 'clip-path 0.22s ease-out, background-color 0.5s ease-out',
+            }}
+          >
+            <div
+              style={{
+                transform: `translateY(-${scrollY}px)`,
+              }}
+            >
+              {/* Hero Section Preview */}
+              <div className="h-screen flex flex-col">
+                <div className="relative flex flex-col items-center justify-center h-full px-4 md:px-8">
+                  {/* Date and Tagline - Preview */}
+                  <div className="absolute top-4 md:top-8 left-4 md:left-8 right-4 md:right-8">
+                    <div className="hidden md:grid grid-cols-3 items-start">
+                      <span
+                        className="tracking-wider md:text-[37px] transition-colors duration-500 ease-out"
+                        style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
+                      >
+                        {LAUNCH_DATE_LABEL}
+                      </span>
 
-                  <div
-                    className="text-xs text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
-                    style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
-                  >
-                    We'll be right back.
-                    <br />
-                    A new chapter is under construction.
+                      <div
+                        className="text-xs text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                        style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
+                      >
+                        We'll be right back.
+                        <br />
+                        A new chapter is under construction.
+                      </div>
+
+                      <span
+                        className="tracking-wider md:text-[37px] text-right transition-colors duration-500 ease-out"
+                        style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
+                      >
+                        {countdown}
+                      </span>
+                    </div>
+
+                    <div className="md:hidden w-full max-w-xs mx-auto">
+                      <div className="flex items-start justify-between">
+                        <span
+                          className="tracking-wider text-lg transition-colors duration-500 ease-out"
+                          style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
+                        >
+                          {LAUNCH_DATE_LABEL}
+                        </span>
+                        <span
+                          className="tracking-wider text-lg text-right transition-colors duration-500 ease-out"
+                          style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
+                        >
+                          {countdown}
+                        </span>
+                      </div>
+
+                      <div
+                        className="mt-4 text-[10px] text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                        style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
+                      >
+                        We'll be right back.
+                        <br />
+                        A new chapter is under construction.
+                      </div>
+                    </div>
                   </div>
 
-                  <span
-                    className="tracking-wider md:text-[37px] text-right transition-colors duration-500 ease-out"
-                    style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
-                  >
-                    {countdown}
-                  </span>
-                </div>
-
-                {/* Mobile: date + countdown row, tagline underneath centred */}
-                <div className="md:hidden w-full max-w-xs mx-auto">
-                  <div className="flex items-start justify-between">
-                    <span
-                      className="tracking-wider text-lg transition-colors duration-500 ease-out"
-                      style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
+                  {/* Main Heading */}
+                  <div className={heroHeadingWrapClass}>
+                    <h1
+                      className={`${heroHeadingClass} transition-colors duration-500 ease-out`}
+                      style={{
+                        color: nextScheme.text,
+                        fontFamily: heroDisplayFont,
+                      }}
                     >
-                      {LAUNCH_DATE_LABEL}
-                    </span>
-                    <span
-                      className="tracking-wider text-lg text-right transition-colors duration-500 ease-out"
-                      style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
-                    >
-                      {countdown}
-                    </span>
-                  </div>
+                      UNIGNORABLE
+                      <br />
+                      <span className="block">WORK</span>
+                      <span className="block italic">
+                        <MadeWordmark color={nextScheme.text} /> <AnimatedWord color={nextScheme.text} />
+                      </span>
+                      <span className="block">UNIGNORABLE</span>
+                      <span className="block">PEOPLE</span>
+                    </h1>
 
-                  <div
-                    className="mt-4 text-[10px] text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
-                    style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
-                  >
-                    We'll be right back.
-                    <br />
-                    A new chapter is under construction.
+                    <HoverFadeButton
+                      active={isHeroButtonActive}
+                      className="mt-6 md:mt-8 px-5 md:px-6 py-2 border rounded-full text-xs md:text-sm tracking-wider"
+                      baseBackgroundColor="transparent"
+                      baseBorderColor={nextScheme.text}
+                      baseTextColor={nextScheme.text}
+                      hoverBackgroundColor={nextScheme.text}
+                      hoverBorderColor={nextScheme.text}
+                      hoverTextColor={nextScheme.bg}
+                      onActiveChange={setIsHeroButtonActive}
+                      style={{
+                        fontFamily: heroInfoMonoFont,
+                      }}
+                    >
+                      CONTACT
+                    </HoverFadeButton>
                   </div>
                 </div>
               </div>
 
-              {/* Main Heading */}
-              <div className={heroHeadingWrapClass}>
-                <h1
-                  className={`${heroHeadingClass} transition-colors duration-500 ease-out`}
-                  style={{
-                    color: nextScheme.text,
-                    fontFamily: heroDisplayFont,
-                  }}
-                >
-                  UNIGNORABLE
-                  <br />
-                  <span className="block">WORK</span>
-                  <span className="block italic">
-                    <MadeWordmark color={nextScheme.text} /> <AnimatedWord color={nextScheme.text} />
-                  </span>
-                  <span className="block">UNIGNORABLE</span>
-                  <span className="block">PEOPLE</span>
-                </h1>
+              <div className="h-32 md:h-52" />
 
-                <HoverFadeButton
-                  active={isHeroButtonActive}
-                  className="mt-6 md:mt-8 px-5 md:px-6 py-2 border rounded-full text-xs md:text-sm tracking-wider"
-                  baseBackgroundColor="transparent"
-                  baseBorderColor={nextScheme.text}
-                  baseTextColor={nextScheme.text}
-                  hoverBackgroundColor={nextScheme.text}
-                  hoverBorderColor={nextScheme.text}
-                  hoverTextColor={nextScheme.bg}
-                  onActiveChange={setIsHeroButtonActive}
-                  style={{
-                    fontFamily: heroInfoMonoFont,
-                  }}
-                >
-                  CONTACT
-                </HoverFadeButton>
+              <div className="py-16 px-4 md:px-8">
+                <ContactForm
+                  backgroundColor={nextScheme.bg}
+                  textColor={nextScheme.text}
+                  borderColor={nextScheme.text}
+                  submitButtonActive={isSubmitButtonActive}
+                  onSubmitButtonActiveChange={setIsSubmitButtonActive}
+                  selectedLocations={selectedLocation ? [selectedLocation] : []}
+                  onToggleLocation={(loc) => setSelectedLocation(selectedLocation === loc ? '' : loc)}
+                  formValues={formValues}
+                  onFormFieldChange={setFormField}
+                />
               </div>
+              <Footer textColor={nextScheme.text} />
             </div>
           </div>
 
-          {/* Spacer between hero CTA and contact section (preview) */}
-          <div className="h-32 md:h-52" />
-
-          {/* Contact Section Preview */}
-          <div className="py-16 px-4 md:px-8">
-            <ContactForm
-              backgroundColor={nextScheme.bg}
-              textColor={nextScheme.text}
-              borderColor={nextScheme.text}
-              submitButtonActive={isSubmitButtonActive}
-              onSubmitButtonActiveChange={setIsSubmitButtonActive}
-              selectedLocations={selectedLocation ? [selectedLocation] : []}
-              onToggleLocation={(loc) => setSelectedLocation(selectedLocation === loc ? '' : loc)}
-              formValues={formValues}
-              onFormFieldChange={setFormField}
-            />
-          </div>
-          <Footer textColor={nextScheme.text} />
-        </div>
-      </div>
-
-      {/* Custom Cursor - Border Only */}
-      <AnimatePresence>
-        {!isTransitioning && (
-          <motion.div
-            className="fixed pointer-events-none z-50 rounded-full"
-            style={{
-              left: mousePosition.x,
-              top: mousePosition.y,
-              border: `2px solid ${nextScheme.text}`,
-              x: '-50%',
-              y: '-50%',
-            }}
-            initial={{ width: 120, height: 120 }}
-            animate={{
-              width: Math.round(lensRadius * 2),
-              height: Math.round(lensRadius * 2),
-            }}
-            transition={{
-              duration: isIdle ? 1.34 : 0.22,
-              ease: isIdle ? cursorGrowEase : cursorShrinkEase,
-            }}
-          />
-        )}
-      </AnimatePresence>
+          <AnimatePresence>
+            {!isTransitioning && (
+              <motion.div
+                className="fixed pointer-events-none z-50 rounded-full"
+                style={{
+                  left: mousePosition.x,
+                  top: mousePosition.y,
+                  border: `2px solid ${nextScheme.text}`,
+                  x: '-50%',
+                  y: '-50%',
+                }}
+                initial={{ width: 120, height: 120 }}
+                animate={{
+                  width: Math.round(lensRadius * 2),
+                  height: Math.round(lensRadius * 2),
+                }}
+                transition={{
+                  duration: isIdle ? 1.34 : 0.22,
+                  ease: isIdle ? cursorGrowEase : cursorShrinkEase,
+                }}
+              />
+            )}
+          </AnimatePresence>
+        </>
+      ) : null}
 
       {/* Expanding Circle Transition */}
       <AnimatePresence>
