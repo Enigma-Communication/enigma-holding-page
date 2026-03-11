@@ -843,3 +843,8 @@ export default function App() {
     </div>
   );
 } 
+
+function setIsIdle(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}
+
