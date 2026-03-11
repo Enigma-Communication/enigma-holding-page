@@ -1,5 +1,17 @@
+@font-face {
+  font-family: 'Enigma-EnigmaLargeRoman';
+  src: url('../assets/fonts/Enigma-EnigmaLargeRoman.otf') format('opentype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OCR-B';
+  src: url('../assets/fonts/OCR-B.otf') format('opentype');
+  font-display: swap;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
 
 body {
-  font-family: 'Courier Prime', 'OCR B', 'Courier New', monospace;
+  font-family: 'OCR-B', 'OCR B', 'Courier Prime', monospace;
 }

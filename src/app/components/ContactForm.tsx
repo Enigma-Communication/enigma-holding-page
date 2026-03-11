@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
+import { HoverFadeButton } from './HoverFadeButton';
 
 interface ContactFormProps {
+  backgroundColor?: string;
   textColor: string;
   borderColor: string;
+  submitButtonActive?: boolean;
   selectedLocations?: string[];
   onToggleLocation?: (loc: string) => void;
   formValues?: FormData;
   onFormFieldChange?: (field: keyof FormData, value: string) => void;
+  onSubmitButtonActiveChange?: (active: boolean) => void;
 }
 
 const LOCATION_EVENT = 'enigma:location-change';
@@ -48,12 +52,15 @@ const ENQUIRY_OPTIONS = [
 ] as const;
 
 export function ContactForm({
+  backgroundColor,
   textColor,
   borderColor,
+  submitButtonActive,
   selectedLocations,
   onToggleLocation,
   formValues,
   onFormFieldChange,
+  onSubmitButtonActiveChange,
 }: ContactFormProps) {
   const [localFormData, setLocalFormData] = useState<FormData>(EMPTY_FORM);
   const formData = formValues ?? localFormData;
@@ -208,7 +215,11 @@ export function ContactForm({
 
   const isChecked = (locationLabel: string) => getSelectedLocation() === locationLabel;
 
-  const monoFont = "'Courier Prime', 'OCR B', 'Courier New', monospace";
+  const monoFont = "'OCR-B', 'OCR B', 'Courier Prime', monospace";
+  const uniformTextClass = 'text-[11px] md:text-xs';
+  const controlClassName =
+    `w-full pb-2 bg-transparent border-0 border-b outline-none focus:border-opacity-100 transition-[color,border-color,opacity] duration-300 ease-out ${uniformTextClass}`;
+  const locationOptions = ['Sydney', 'Newcastle', 'Brisbane'] as const;
 
   return (
     <motion.div
@@ -216,21 +227,22 @@ export function ContactForm({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
       className="w-full max-w-7xl mx-auto px-4 md:px-8"
+      style={{ ['--enigma-accent' as string]: textColor }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-start">
         {/* Left Column - Heading */}
         <div>
           <h2
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 md:mb-6 tracking-tight"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 md:mb-6 tracking-tight transition-colors duration-300 ease-out"
             style={{
               color: textColor,
-              fontFamily: "'Enigma-EnigmaLargeRoman', serif",
+              fontFamily: monoFont,
             }}
           >
             Contact us
           </h2>
           <p
-            className="text-xs md:text-sm leading-relaxed max-w-md"
+            className={`${uniformTextClass} leading-relaxed max-w-md`}
             style={{ color: textColor, fontFamily: monoFont }}
           >
             Interested in working together? Fill out some info and we will be in touch shortly. We can't wait to hear from you!
@@ -263,7 +275,7 @@ export function ContactForm({
               className="py-10 md:py-14"
             >
               <p
-                className="text-sm md:text-base leading-relaxed"
+                className={`${uniformTextClass} leading-relaxed`}
                 style={{ color: textColor, fontFamily: monoFont }}
               >
                 Thank you for your enquiry, someone will be in contact soon.
@@ -276,7 +288,7 @@ export function ContactForm({
             <div>
               <label
                 htmlFor="firstName"
-                className="block text-[10px] md:text-xs mb-2 tracking-wider"
+                className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
                 style={{ color: textColor, fontFamily: monoFont }}
               >
                 First Name
@@ -288,7 +300,7 @@ export function ContactForm({
                 value={formData.firstName}
                 onChange={handleChange}
                 required
-                className="w-full pb-2 bg-transparent border-0 border-b outline-none focus:border-opacity-100 transition-all text-sm md:text-base"
+                className={controlClassName}
                 style={{
                   color: textColor,
                   borderBottomColor: textColor,
@@ -301,7 +313,7 @@ export function ContactForm({
             <div>
               <label
                 htmlFor="lastName"
-                className="block text-[10px] md:text-xs mb-2 tracking-wider"
+                className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
                 style={{ color: textColor, fontFamily: monoFont }}
               >
                 Last Name
@@ -313,7 +325,7 @@ export function ContactForm({
                 value={formData.lastName}
                 onChange={handleChange}
                 required
-                className="w-full pb-2 bg-transparent border-0 border-b outline-none focus:border-opacity-100 transition-all text-sm md:text-base"
+                className={controlClassName}
                 style={{
                   color: textColor,
                   borderBottomColor: textColor,
@@ -328,7 +340,7 @@ export function ContactForm({
           <div>
             <label
               htmlFor="email"
-              className="block text-[10px] md:text-xs mb-2 tracking-wider"
+              className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
               style={{ color: textColor, fontFamily: monoFont }}
             >
               Email
@@ -340,7 +352,7 @@ export function ContactForm({
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full pb-2 bg-transparent border-0 border-b outline-none focus:border-opacity-100 transition-all text-sm md:text-base"
+              className={controlClassName}
               style={{
                 color: textColor,
                 borderBottomColor: textColor,
@@ -354,7 +366,7 @@ export function ContactForm({
           <div>
             <label
               htmlFor="enquiryType"
-              className="block text-[10px] md:text-xs mb-2 tracking-wider"
+              className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
               style={{ color: textColor, fontFamily: monoFont }}
             >
               Enquiry Type
@@ -365,7 +377,7 @@ export function ContactForm({
               value={formData.enquiryType}
               onChange={handleChange}
               required
-              className="w-full pb-2 bg-transparent border-0 border-b outline-none focus:border-opacity-100 transition-all text-sm md:text-base"
+              className={controlClassName}
               style={{
                 color: textColor,
                 borderBottomColor: textColor,
@@ -391,7 +403,7 @@ export function ContactForm({
           <div>
             <label
               htmlFor="message"
-              className="block text-[10px] md:text-xs mb-2 tracking-wider"
+              className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
               style={{ color: textColor, fontFamily: monoFont }}
             >
               Message
@@ -403,7 +415,7 @@ export function ContactForm({
               onChange={handleChange}
               required
               rows={4}
-              className="w-full pb-2 bg-transparent border-0 border-b outline-none focus:border-opacity-100 transition-all resize-none text-sm md:text-base"
+              className={`${controlClassName} resize-none`}
               style={{
                 color: textColor,
                 borderBottomColor: textColor,
@@ -414,7 +426,7 @@ export function ContactForm({
           </div>
 
           {formError ? (
-            <p className="text-xs md:text-sm" style={{ color: textColor, fontFamily: monoFont, opacity: 0.9 }}>
+            <p className={uniformTextClass} style={{ color: textColor, fontFamily: monoFont, opacity: 0.9 }}>
               {formError}
             </p>
           ) : null}
@@ -422,69 +434,60 @@ export function ContactForm({
           {/* Checkboxes and Submit */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 md:gap-6">
             <div className="flex flex-wrap gap-4 md:gap-6">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="locationOption"
-                  value="Sydney"
-                  checked={isChecked('Sydney')}
-                  onChange={() => handleCheckboxChange('Sydney')}
-                  className="w-4 h-4 cursor-pointer"
-                  style={{
-                    accentColor: textColor,
-                  }}
-                />
-                <span className="text-xs md:text-sm" style={{ color: textColor, fontFamily: monoFont }}>
-                  Sydney
-                </span>
-              </label>
+              {locationOptions.map((location) => {
+                const checked = isChecked(location);
 
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="locationOption"
-                  value="Newcastle"
-                  checked={isChecked('Newcastle')}
-                  onChange={() => handleCheckboxChange('Newcastle')}
-                  className="w-4 h-4 cursor-pointer"
-                  style={{
-                    accentColor: textColor,
-                  }}
-                />
-                <span className="text-xs md:text-sm" style={{ color: textColor, fontFamily: monoFont }}>
-                  Newcastle
-                </span>
-              </label>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="locationOption"
-                  value="Brisbane"
-                  checked={isChecked('Brisbane')}
-                  onChange={() => handleCheckboxChange('Brisbane')}
-                  className="w-4 h-4 cursor-pointer"
-                  style={{
-                    accentColor: textColor,
-                  }}
-                />
-                <span className="text-xs md:text-sm" style={{ color: textColor, fontFamily: monoFont }}>
-                  Brisbane
-                </span>
-              </label>
+                return (
+                  <label key={location} className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="locationOption"
+                      value={location}
+                      checked={checked}
+                      onChange={() => handleCheckboxChange(location)}
+                      className="sr-only peer"
+                    />
+                    <span
+                      aria-hidden="true"
+                      className="flex size-[18px] shrink-0 items-center justify-center border transition-[opacity,border-color,background-color] duration-300 ease-out peer-focus-visible:opacity-85"
+                      style={{
+                        borderColor,
+                        backgroundColor: 'transparent',
+                      }}
+                    >
+                      <span
+                        className="size-[12px] transition-[opacity,background-color] duration-300 ease-out"
+                        style={{
+                          opacity: checked ? 1 : 0,
+                          backgroundColor: 'var(--enigma-accent)',
+                        }}
+                      />
+                    </span>
+                    <span className={`${uniformTextClass} uppercase`} style={{ color: textColor, fontFamily: monoFont }}>
+                      {location}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
 
-            <button
+            <HoverFadeButton
+              active={submitButtonActive}
               type="submit"
-              className="px-6 md:px-8 py-2 border rounded-full text-[10px] md:text-xs tracking-widest hover:opacity-80 transition-opacity w-full sm:w-auto"
+              className={`px-6 md:px-8 py-2 border rounded-full ${uniformTextClass} tracking-widest w-full sm:w-auto`}
+              baseBackgroundColor="transparent"
+              baseBorderColor={borderColor}
+              baseTextColor={textColor}
+              hoverBackgroundColor={textColor}
+              hoverBorderColor={textColor}
+              hoverTextColor={backgroundColor ?? '#000000'}
+              onActiveChange={onSubmitButtonActiveChange}
                 style={{
-                  color: textColor,
-                  borderColor,
                   fontFamily: monoFont,
                 }}
             >
               SEND
-            </button>
+            </HoverFadeButton>
           </div>
           </>
           )}

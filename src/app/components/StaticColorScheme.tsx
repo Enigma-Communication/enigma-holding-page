@@ -1,5 +1,6 @@
 import { AnimatedWord } from './AnimatedWord';
 import { ContactForm } from './ContactForm';
+import { HoverFadeButton } from './HoverFadeButton';
 
 interface StaticColorSchemeProps {
   bg: string;
@@ -24,10 +25,10 @@ export function StaticColorScheme({ bg, text }: StaticColorSchemeProps) {
               01.04.26
             </span>
             <div
-              className="text-xs text-center max-w-xs"
+              className="text-xs text-center max-w-[24rem]"
               style={{ color: text, fontFamily: "'Courier Prime', 'OCR B', 'Courier New', monospace" }}
             >
-              We'll be back soon.
+              We'll be right back.
               <br />
               A new chapter is under construction.
             </div>
@@ -58,23 +59,27 @@ export function StaticColorScheme({ bg, text }: StaticColorSchemeProps) {
               <span className="block">PEOPLE</span>
             </h1>
 
-            <button
+            <HoverFadeButton
               className="mt-8 px-6 py-2 border rounded-full text-sm tracking-wider"
+              baseBackgroundColor="transparent"
+              baseBorderColor={text}
+              baseTextColor={text}
+              hoverBackgroundColor={text}
+              hoverBorderColor={text}
+              hoverTextColor={bg}
               style={{
-                color: text,
-                borderColor: text,
                 fontFamily: "'Courier Prime', 'OCR B', 'Courier New', monospace"
               }}
             >
               CONTACT
-            </button>
+            </HoverFadeButton>
           </div>
         </div>
       </div>
 
       {/* Contact Section */}
       <div className="py-16 px-8">
-        <ContactForm textColor={text} borderColor={text} />
+        <ContactForm backgroundColor={bg} textColor={text} borderColor={text} />
       </div>
     </div>
   );

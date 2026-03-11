@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AnimatedWord } from './components/AnimatedWord';
 import { ContactForm } from './components/ContactForm';
+import { HoverFadeButton } from './components/HoverFadeButton';
 
 function MadeWordmark({ color }: { color: string }) {
   return (
@@ -48,6 +49,14 @@ const colorSchemes: ColorScheme[] = [
   { bg: '#00ff89', text: '#000000' },
 ];
 
+const heroInfoMonoFont = "'OCR-B', 'OCR B', 'Courier Prime', monospace";
+const heroDisplayFont = "'Enigma-EnigmaLargeRoman', serif";
+const cursorGrowEase = [0.15, 0.78, 0.72, 1] as const;
+const cursorShrinkEase = [0.25, 0.1, 0.25, 1] as const;
+const heroHeadingWrapClass = 'text-center mt-16 md:mt-32 lg:mt-36';
+const heroHeadingClass =
+  'mx-auto max-w-[88vw] sm:max-w-[90vw] md:max-w-[94vw] text-[2.65rem] sm:text-[3.75rem] md:text-[5.9rem] lg:text-[6.9rem] xl:text-[8rem] 2xl:text-[9.4rem] tracking-tight leading-[0.86] mb-5 md:mb-6';
+
 function Footer({ textColor }: { textColor: string }) {
   return (
     <footer className="relative z-10 py-10 md:py-16 mt-10 md:mt-16">
@@ -58,13 +67,16 @@ function Footer({ textColor }: { textColor: string }) {
           style={{
             color: textColor,
             fontFamily: "'OCR-B', 'OCR B', monospace",
-            fontSize: "clamp(12px, 1vw, 15px)",
+            fontSize: "clamp(11px, 0.72vw, 12px)",
             letterSpacing: "0.02em",
           }}
         >
-          <a href="#contact" className="hover:opacity-80 transition-opacity">Contact</a>
-          <a href="/privacy-policy" className="hover:opacity-80 transition-opacity">Privacy Policy</a>
-          <span>2026</span>
+          <a href="mailto:hello@enigma.net.au" className="hover:opacity-80 transition-opacity">Contact</a>
+          <a href="/privacy-policy.html" target="_blank" rel="noreferrer" className="hover:opacity-80 transition-opacity">Privacy Policy</a>
+          <span className="inline-flex items-baseline gap-[0.18em]">
+            <span className="text-[1em] leading-none">&copy;</span>
+            <span className="text-[1em] leading-none">2026</span>
+          </span>
         </div>
 
         {/* Right */}
@@ -73,7 +85,7 @@ function Footer({ textColor }: { textColor: string }) {
           style={{
             color: textColor,
             fontFamily: "'OCR-B', 'OCR B', monospace",
-            fontSize: "clamp(10px, 0.8vw, 12px)",
+            fontSize: "clamp(11px, 0.72vw, 12px)",
             lineHeight: 1.55,
             letterSpacing: "0.02em",
             opacity: 0.9,
@@ -97,6 +109,8 @@ export default function App() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isIdle, setIsIdle] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isHeroButtonActive, setIsHeroButtonActive] = useState(false);
+  const [isSubmitButtonActive, setIsSubmitButtonActive] = useState(false);
   const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
 
@@ -118,21 +132,6 @@ export default function App() {
   // Track whether the cursor is currently over the contact form
   const isOverFormRef = useRef(false);
 
-  // Viewport sizing (used to keep the preview circle sensible on mobile)
-  const viewportRef = useRef({ w: window.innerWidth, h: window.innerHeight, min: Math.min(window.innerWidth, window.innerHeight) });
-
-  useEffect(() => {
-    const onResize = () => {
-      viewportRef.current = {
-        w: window.innerWidth,
-        h: window.innerHeight,
-        min: Math.min(window.innerWidth, window.innerHeight),
-      };
-    };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-
   // Launch date + live countdown
   const LAUNCH_DATE_LABEL = '01.06.26';
   // Target: 1 June 2026 00:00 (local time)
@@ -153,12 +152,10 @@ export default function App() {
     return formatCountdown(diff);
   });
 
-  // Velocity-based lens sizing (fast movement = small, slow/stop = larger)
-  const [lensRadius, setLensRadius] = useState(60); // px
-  const lensRadiusRef = useRef(60);
-  const targetLensRadiusRef = useRef(60);
-  const lastMouseRef = useRef<{ x: number; y: number; t: number } | null>(null);
-  const radiusRafRef = useRef<number | null>(null);
+  const SMALL_RADIUS = 10;
+  const LARGE_RADIUS = 860;
+  const IDLE_DELAY_MS = 180;
+  const [lensRadius, setLensRadius] = useState(SMALL_RADIUS);
 
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -208,10 +205,10 @@ export default function App() {
                     </span>
 
                     <div
-                      className="text-xs text-center mx-auto max-w-xs"
+                      className="text-xs text-center mx-auto max-w-[24rem]"
                     style={{ color: scheme.text, fontFamily: "'OCR-B', 'OCR B', monospace" }}
                     >
-                      We'll be back soon.
+                      We'll be right back.
                       <br />
                       A new chapter is under construction.
                     </div>
@@ -242,10 +239,10 @@ export default function App() {
                     </div>
 
                     <div
-                      className="mt-4 text-[10px] text-center mx-auto max-w-xs"
+                      className="mt-4 text-[10px] text-center mx-auto max-w-[24rem]"
                     style={{ color: scheme.text, fontFamily: "'OCR-B', 'OCR B', monospace" }}
                     >
-                      We'll be back soon.
+                      We'll be right back.
                       <br />
                       A new chapter is under construction.
                     </div>
@@ -253,9 +250,9 @@ export default function App() {
                 </div>
 
                 {/* Main Heading */}
-                <div className="text-center mt-12 md:mt-28">
+                <div className={heroHeadingWrapClass}>
                   <h1
-                    className="mx-auto max-w-[92vw] text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight leading-[0.9] mb-6 md:mb-8"
+                    className={heroHeadingClass}
                     style={{ 
                       color: scheme.text,
                       fontFamily: "'Enigma-EnigmaLargeRoman', serif"
@@ -271,16 +268,22 @@ export default function App() {
                     <span className="block">PEOPLE</span>
                   </h1>
 
-                  <button
+                  <HoverFadeButton
+                    active={isHeroButtonActive}
                     className="mt-6 md:mt-8 px-5 md:px-6 py-2 border rounded-full text-xs md:text-sm tracking-wider"
+                    baseBackgroundColor="transparent"
+                    baseBorderColor={scheme.text}
+                    baseTextColor={scheme.text}
+                    hoverBackgroundColor={scheme.text}
+                    hoverBorderColor={scheme.text}
+                    hoverTextColor={scheme.bg}
+                    onActiveChange={setIsHeroButtonActive}
                     style={{
-                      color: scheme.text,
-                      borderColor: scheme.text,
                       fontFamily: "'OCR-B', 'OCR B', monospace"
                     }}
                   >
                     CONTACT
-                  </button>
+                  </HoverFadeButton>
                 </div>
               </div>
             </div>
@@ -291,8 +294,11 @@ export default function App() {
             {/* Contact Section */}
             <div id="contact" className="py-12 md:py-16 px-4 md:px-8">
               <ContactForm
+                backgroundColor={scheme.bg}
                 textColor={scheme.text}
                 borderColor={scheme.text}
+                submitButtonActive={isSubmitButtonActive}
+                onSubmitButtonActiveChange={setIsSubmitButtonActive}
               />
             </div>
             <Footer textColor={scheme.text} />
@@ -306,24 +312,22 @@ export default function App() {
   const nextScheme = colorSchemes[(currentSchemeIndex + 1) % colorSchemes.length];
 
   useEffect(() => {
+    const clampToViewport = (x: number, y: number) => ({
+      x: Math.max(0, Math.min(x, window.innerWidth)),
+      y: Math.max(0, Math.min(y, window.innerHeight)),
+    });
+
     const handleMouseMove = (e: MouseEvent) => {
-      const x = e.clientX;
-      const y = e.clientY;
-      const now = performance.now();
+      const { x, y } = clampToViewport(e.clientX, e.clientY);
 
       setMousePosition({ x, y });
       setIsIdle(false);
+      setLensRadius(SMALL_RADIUS);
 
       // If the cursor is over the form, keep the lens small (no idle expansion)
       const el = document.elementFromPoint(x, y) as HTMLElement | null;
       const overForm = !!el?.closest('#contact form');
       isOverFormRef.current = overForm;
-
-      // While the mouse is moving keep the circle small
-      const SMALL_RADIUS = 10;
-      targetLensRadiusRef.current = SMALL_RADIUS;
-
-      lastMouseRef.current = { x, y, t: now };
 
       if (idleTimerRef.current) {
         clearTimeout(idleTimerRef.current);
@@ -334,17 +338,20 @@ export default function App() {
         return;
       }
 
-      // After 1 second of no movement expand the lens
+      // After a brief pause, grow the lens with an ease-in curve.
       idleTimerRef.current = setTimeout(() => {
         // If the cursor ended up over the form, still do not expand
         if (isOverFormRef.current) return;
 
         setIsIdle(true);
+        setLensRadius(LARGE_RADIUS);
+      }, IDLE_DELAY_MS);
+    };
 
-        // When idle, grow the lens (classic behaviour)
-        const LARGE_RADIUS = 700;
-        targetLensRadiusRef.current = LARGE_RADIUS;
-      }, 1000);
+    const handleMouseOut = (e: MouseEvent) => {
+      if (e.relatedTarget || (e as MouseEvent & { toElement?: EventTarget | null }).toElement) return;
+      const { x, y } = clampToViewport(e.clientX, e.clientY);
+      setMousePosition({ x, y });
     };
 
     const handleScroll = () => {
@@ -352,31 +359,15 @@ export default function App() {
     };
 
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseout', handleMouseOut);
     window.addEventListener('scroll', handleScroll);
-
-    const tick = () => {
-      // Ease toward the target radius for smooth growth/shrink
-      const current = lensRadiusRef.current;
-      const target = targetLensRadiusRef.current;
-      const easing = target > current ? 0.006 : 0.045;
-      const eased = current + (target - current) * easing;
-      // Allow the lens to reach the old large size (no responsive cap)
-      const maxRadius = 700;
-      const next = Math.max(6, Math.min(eased, maxRadius));
-      lensRadiusRef.current = next;
-      setLensRadius(next);
-      radiusRafRef.current = requestAnimationFrame(tick);
-    };
-    radiusRafRef.current = requestAnimationFrame(tick);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseout', handleMouseOut);
       window.removeEventListener('scroll', handleScroll);
       if (idleTimerRef.current) {
         clearTimeout(idleTimerRef.current);
-      }
-      if (radiusRafRef.current) {
-        cancelAnimationFrame(radiusRafRef.current);
       }
     };
   }, []);
@@ -434,7 +425,7 @@ export default function App() {
 
   return (
     <div
-      className="relative w-full min-h-screen overflow-y-auto overflow-x-hidden cursor-none"
+      className="relative w-full min-h-screen overflow-y-auto overflow-x-hidden cursor-none transition-colors duration-500 ease-out"
       style={{ backgroundColor: currentScheme.bg }}
       onClick={handleClick}
     >
@@ -444,79 +435,72 @@ export default function App() {
         <div ref={contentRef} className="relative z-10 flex flex-col items-center justify-center h-full px-4 md:px-8">
           {/* Date and Tagline */}
           <div className="absolute top-4 md:top-8 left-4 md:left-8 right-4 md:right-8">
-            {/* Desktop: date | tagline | countdown on one line */}
             <div className="hidden md:grid grid-cols-3 items-start">
               <motion.span
-                key={`date-${currentSchemeIndex}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="tracking-wider md:text-[37px]"
-                style={{ color: currentScheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                className="tracking-wider md:text-[37px] transition-colors duration-500 ease-out"
+                style={{ color: currentScheme.text, fontFamily: heroDisplayFont }}
               >
                 {LAUNCH_DATE_LABEL}
               </motion.span>
 
               <motion.div
-                key={`tagline-${currentSchemeIndex}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-xs text-center mx-auto max-w-xs"
-              style={{ color: currentScheme.text, fontFamily: "'OCR-B', 'OCR B', monospace" }}
+                className="text-xs text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                style={{ color: currentScheme.text, fontFamily: heroInfoMonoFont }}
               >
-                We'll be back soon.
+                We'll be right back.
                 <br />
                 A new chapter is under construction.
               </motion.div>
 
               <motion.span
-                key={`timer-${currentSchemeIndex}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="tracking-wider md:text-[37px] text-right"
-                style={{ color: currentScheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                className="tracking-wider md:text-[37px] text-right transition-colors duration-500 ease-out"
+                style={{ color: currentScheme.text, fontFamily: heroDisplayFont }}
               >
                 {countdown}
               </motion.span>
             </div>
 
             {/* Mobile: date + countdown row, tagline underneath centred */}
-            <div className="md:hidden">
+            <div className="md:hidden w-full max-w-xs mx-auto">
               <div className="flex items-start justify-between">
                 <motion.span
-                  key={`date-m-${currentSchemeIndex}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="tracking-wider text-lg"
-                  style={{ color: currentScheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                  className="tracking-wider text-lg transition-colors duration-500 ease-out"
+                  style={{ color: currentScheme.text, fontFamily: heroDisplayFont }}
                 >
                   {LAUNCH_DATE_LABEL}
                 </motion.span>
 
                 <motion.span
-                  key={`timer-m-${currentSchemeIndex}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="tracking-wider text-lg text-right"
-                  style={{ color: currentScheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                  className="tracking-wider text-lg text-right transition-colors duration-500 ease-out"
+                  style={{ color: currentScheme.text, fontFamily: heroDisplayFont }}
                 >
                   {countdown}
                 </motion.span>
               </div>
 
               <motion.div
-                key={`tagline-m-${currentSchemeIndex}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="mt-4 text-[10px] text-center mx-auto max-w-xs"
-              style={{ color: currentScheme.text, fontFamily: "'OCR-B', 'OCR B', monospace" }}
+                className="mt-4 text-[10px] text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                style={{ color: currentScheme.text, fontFamily: heroInfoMonoFont }}
               >
-                We'll be back soon.
+                We'll be right back.
                 <br />
                 A new chapter is under construction.
               </motion.div>
@@ -525,17 +509,16 @@ export default function App() {
 
           {/* Main Heading */}
           <motion.div
-            key={`heading-${currentSchemeIndex}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mt-12 md:mt-28"
+            className={heroHeadingWrapClass}
           >
             <h1
-              className="mx-auto max-w-[92vw] text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight leading-[0.9] mb-6 md:mb-8"
+              className={`${heroHeadingClass} transition-colors duration-500 ease-out`}
               style={{ 
                 color: currentScheme.text,
-                fontFamily: "'Enigma-EnigmaLargeRoman', serif"
+                fontFamily: heroDisplayFont
               }}
             >
               UNIGNORABLE
@@ -548,17 +531,23 @@ export default function App() {
               <span className="block">PEOPLE</span>
             </h1>
 
-            <button
-              className="mt-6 md:mt-8 px-5 md:px-6 py-2 border rounded-full text-xs md:text-sm tracking-wider hover:opacity-80 transition-opacity"
+            <HoverFadeButton
+              active={isHeroButtonActive}
+              className="mt-6 md:mt-8 px-5 md:px-6 py-2 border rounded-full text-xs md:text-sm tracking-wider"
+              baseBackgroundColor="transparent"
+              baseBorderColor={currentScheme.text}
+              baseTextColor={currentScheme.text}
+              hoverBackgroundColor={currentScheme.text}
+              hoverBorderColor={currentScheme.text}
+              hoverTextColor={currentScheme.bg}
+              onActiveChange={setIsHeroButtonActive}
               style={{
-                color: currentScheme.text,
-                borderColor: currentScheme.text,
-                fontFamily: "'OCR-B', 'OCR B', monospace"
+                fontFamily: heroInfoMonoFont
               }}
               onClick={scrollToContact}
             >
               CONTACT
-            </button>
+            </HoverFadeButton>
           </motion.div>
         </div>
       </div>
@@ -573,8 +562,11 @@ export default function App() {
         className="relative z-10 py-12 md:py-16 px-4 md:px-8"
       >
         <ContactForm
+          backgroundColor={currentScheme.bg}
           textColor={currentScheme.text}
           borderColor={currentScheme.text}
+          submitButtonActive={isSubmitButtonActive}
+          onSubmitButtonActiveChange={setIsSubmitButtonActive}
           selectedLocations={selectedLocation ? [selectedLocation] : []}
           onToggleLocation={(loc) => setSelectedLocation(selectedLocation === loc ? '' : loc)}
           formValues={formValues}
@@ -589,6 +581,9 @@ export default function App() {
         style={{
           clipPath: `circle(${Math.round(lensRadius)}px at ${mousePosition.x}px ${mousePosition.y}px)`,
           backgroundColor: nextScheme.bg,
+          transition: isIdle
+            ? 'clip-path 1.34s cubic-bezier(0.15, 0.78, 0.72, 1), background-color 0.5s ease-out'
+            : 'clip-path 0.22s ease-out, background-color 0.5s ease-out',
         }}
       >
         <div 
@@ -601,54 +596,53 @@ export default function App() {
             <div className="relative flex flex-col items-center justify-center h-full px-4 md:px-8">
               {/* Date and Tagline - Preview */}
               <div className="absolute top-4 md:top-8 left-4 md:left-8 right-4 md:right-8">
-                {/* Desktop: date | tagline | countdown on one line */}
                 <div className="hidden md:grid grid-cols-3 items-start">
                   <span
-                    className="tracking-wider md:text-[37px]"
-                    style={{ color: nextScheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                    className="tracking-wider md:text-[37px] transition-colors duration-500 ease-out"
+                    style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
                   >
                     {LAUNCH_DATE_LABEL}
                   </span>
 
                   <div
-                    className="text-xs text-center mx-auto max-w-xs"
-                    style={{ color: nextScheme.text, fontFamily: "'OCR-B', 'OCR B', monospace" }}
+                    className="text-xs text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                    style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
                   >
-                    We'll be back soon.
+                    We'll be right back.
                     <br />
                     A new chapter is under construction.
                   </div>
 
                   <span
-                    className="tracking-wider md:text-[37px] text-right"
-                    style={{ color: nextScheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                    className="tracking-wider md:text-[37px] text-right transition-colors duration-500 ease-out"
+                    style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
                   >
                     {countdown}
                   </span>
                 </div>
 
                 {/* Mobile: date + countdown row, tagline underneath centred */}
-                <div className="md:hidden">
+                <div className="md:hidden w-full max-w-xs mx-auto">
                   <div className="flex items-start justify-between">
                     <span
-                      className="tracking-wider text-lg"
-                      style={{ color: nextScheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                      className="tracking-wider text-lg transition-colors duration-500 ease-out"
+                      style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
                     >
                       {LAUNCH_DATE_LABEL}
                     </span>
                     <span
-                      className="tracking-wider text-lg text-right"
-                      style={{ color: nextScheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                      className="tracking-wider text-lg text-right transition-colors duration-500 ease-out"
+                      style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
                     >
                       {countdown}
                     </span>
                   </div>
 
                   <div
-                    className="mt-4 text-[10px] text-center mx-auto max-w-xs"
-                    style={{ color: nextScheme.text, fontFamily: "'OCR-B', 'OCR B', monospace" }}
+                    className="mt-4 text-[10px] text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                    style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
                   >
-                    We'll be back soon.
+                    We'll be right back.
                     <br />
                     A new chapter is under construction.
                   </div>
@@ -656,12 +650,12 @@ export default function App() {
               </div>
 
               {/* Main Heading */}
-              <div className="text-center mt-12 md:mt-28">
+              <div className={heroHeadingWrapClass}>
                 <h1
-                  className="mx-auto max-w-[92vw] text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight leading-[0.9] mb-6 md:mb-8"
+                  className={`${heroHeadingClass} transition-colors duration-500 ease-out`}
                   style={{
                     color: nextScheme.text,
-                    fontFamily: "'Enigma-EnigmaLargeRoman', serif",
+                    fontFamily: heroDisplayFont,
                   }}
                 >
                   UNIGNORABLE
@@ -674,16 +668,22 @@ export default function App() {
                   <span className="block">PEOPLE</span>
                 </h1>
 
-                <button
+                <HoverFadeButton
+                  active={isHeroButtonActive}
                   className="mt-6 md:mt-8 px-5 md:px-6 py-2 border rounded-full text-xs md:text-sm tracking-wider"
+                  baseBackgroundColor="transparent"
+                  baseBorderColor={nextScheme.text}
+                  baseTextColor={nextScheme.text}
+                  hoverBackgroundColor={nextScheme.text}
+                  hoverBorderColor={nextScheme.text}
+                  hoverTextColor={nextScheme.bg}
+                  onActiveChange={setIsHeroButtonActive}
                   style={{
-                    color: nextScheme.text,
-                    borderColor: nextScheme.text,
-                    fontFamily: "'OCR-B', 'OCR B', monospace",
+                    fontFamily: heroInfoMonoFont,
                   }}
                 >
                   CONTACT
-                </button>
+                </HoverFadeButton>
               </div>
             </div>
           </div>
@@ -694,8 +694,11 @@ export default function App() {
           {/* Contact Section Preview */}
           <div className="py-16 px-4 md:px-8">
             <ContactForm
+              backgroundColor={nextScheme.bg}
               textColor={nextScheme.text}
               borderColor={nextScheme.text}
+              submitButtonActive={isSubmitButtonActive}
+              onSubmitButtonActiveChange={setIsSubmitButtonActive}
               selectedLocations={selectedLocation ? [selectedLocation] : []}
               onToggleLocation={(loc) => setSelectedLocation(selectedLocation === loc ? '' : loc)}
               formValues={formValues}
@@ -724,8 +727,8 @@ export default function App() {
               height: Math.round(lensRadius * 2),
             }}
             transition={{
-              duration: 0.35,
-              ease: 'easeOut',
+              duration: isIdle ? 1.34 : 0.22,
+              ease: isIdle ? cursorGrowEase : cursorShrinkEase,
             }}
           />
         )}
