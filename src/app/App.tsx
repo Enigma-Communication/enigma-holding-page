@@ -150,7 +150,7 @@ export default function App() {
 
   const SMALL_RADIUS = 10;
   const LARGE_RADIUS = 860;
-  const IDLE_DELAY_MS = 320;
+  const IDLE_DELAY_MS = 60000; // 60 seconds delay before the lens expands
 
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
