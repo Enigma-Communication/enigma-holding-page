@@ -484,7 +484,9 @@ export default function App() {
       typeof ResizeObserver !== 'undefined' && contactRef.current
         ? new ResizeObserver(updateFormBounds)
         : null;
-    resizeObserver?.observe(contactRef.current);
+    if (resizeObserver && contactRef.current) {
+      resizeObserver.observe(contactRef.current);
+    }
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseout', handleMouseOut);
