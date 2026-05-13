@@ -129,9 +129,9 @@ export default function App() {
   const isOverFormRef = useRef(false);
 
   // Launch date + live countdown
-  const LAUNCH_DATE_LABEL = '01.06.26';
-  // Target: 1 June 2026 00:00 (local time)
-  const launchDateRef = useRef(new Date(2026, 5, 1, 0, 0, 0));
+  const LAUNCH_DATE_LABEL = '15.07.26';
+  // Target: 15 July 2026 00:00 (local time)
+  const launchDateRef = useRef(new Date(2026, 6, 15, 0, 0, 0));
 
   const pad2 = (n: number) => String(n).padStart(2, '0');
   const formatCountdown = (msRemaining: number) => {
