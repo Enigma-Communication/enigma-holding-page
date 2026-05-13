@@ -150,7 +150,7 @@ export default function App() {
 
   const SMALL_RADIUS = 10;
   const LARGE_RADIUS = 860;
-  const IDLE_DELAY_MS = 180;
+  const IDLE_DELAY_MS = 320;
 
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
