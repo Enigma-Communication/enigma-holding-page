@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { HoverFadeButton } from './HoverFadeButton';
 
@@ -10,6 +10,8 @@ interface ContactFormProps {
   selectedLocations?: string[];
   onToggleLocation?: (loc: string) => void;
   formValues?: FormData;
+  formId?: string;
+  isPreview?: boolean;
   onFormFieldChange?: (field: keyof FormData, value: string) => void;
   onSubmitButtonActiveChange?: (active: boolean) => void;
 }
@@ -59,9 +61,12 @@ export function ContactForm({
   selectedLocations,
   onToggleLocation,
   formValues,
+  formId = 'contact-form',
+  isPreview = false,
   onFormFieldChange,
   onSubmitButtonActiveChange,
 }: ContactFormProps) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [localFormData, setLocalFormData] = useState<FormData>(EMPTY_FORM);
   const formData = formValues ?? localFormData;
 
@@ -92,6 +97,7 @@ export function ContactForm({
 
   // Dispatch event when user starts or stops interacting with the form
   const broadcastFormInteracting = (interacting: boolean) => {
+    if (isPreview) return;
     window.dispatchEvent(new CustomEvent(FORM_INTERACTING_EVENT, { detail: interacting }));
   };
 
@@ -104,7 +110,7 @@ export function ContactForm({
     setTimeout(() => {
       // Check if document.activeElement is inside the form
       const active = document.activeElement;
-      const form = document.getElementById('contact-form');
+      const form = formRef.current;
       if (!form || !active || !form.contains(active)) {
         broadcastFormInteracting(false);
       }
@@ -220,6 +226,7 @@ export function ContactForm({
   const controlClassName =
     `w-full pb-2 bg-transparent border-0 border-b outline-none focus:border-opacity-100 transition-[color,border-color,opacity] duration-300 ease-out ${uniformTextClass}`;
   const locationOptions = ['Sydney', 'Newcastle', 'Brisbane'] as const;
+  const fieldId = (name: keyof FormData) => (isPreview ? `${formId}-${name}` : name);
 
   return (
     <motion.div
@@ -251,20 +258,26 @@ export function ContactForm({
 
         {/* Right Column - Form */}
         <form
-          id="contact-form"
-          name="contact"
-          method="POST"
-          action="/"
-          data-netlify="true"
-          netlify-honeypot="bot-field"
-          onSubmit={handleSubmit}
+          ref={formRef}
+          id={formId}
+          name={isPreview ? undefined : 'contact'}
+          method={isPreview ? undefined : 'POST'}
+          action={isPreview ? undefined : '/'}
+          data-netlify={isPreview ? undefined : 'true'}
+          netlify-honeypot={isPreview ? undefined : 'bot-field'}
+          onSubmit={isPreview ? undefined : handleSubmit}
           className="space-y-6 md:space-y-8"
-          onFocus={handleFocus}
-          onBlur={handleBlur}
+          onFocus={isPreview ? undefined : handleFocus}
+          onBlur={isPreview ? undefined : handleBlur}
+          aria-hidden={isPreview || undefined}
         >
-          <input type="hidden" name="form-name" value="contact" />
-          <input type="hidden" name="bot-field" value="" />
-          <input type="hidden" name="location" value={getSelectedLocation()} />
+          {!isPreview ? (
+            <>
+              <input type="hidden" name="form-name" value="contact" />
+              <input type="hidden" name="bot-field" value="" />
+              <input type="hidden" name="location" value={getSelectedLocation()} />
+            </>
+          ) : null}
           {submitState === 'success' ? (
             <motion.div
               key="success"
@@ -287,7 +300,7 @@ export function ContactForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
             <div>
               <label
-                htmlFor="firstName"
+                htmlFor={fieldId('firstName')}
                 className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
                 style={{ color: textColor, fontFamily: monoFont }}
               >
@@ -295,10 +308,12 @@ export function ContactForm({
               </label>
               <input
                 type="text"
-                id="firstName"
+                id={fieldId('firstName')}
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
+                readOnly={isPreview}
+                tabIndex={isPreview ? -1 : undefined}
                 required
                 className={controlClassName}
                 style={{
@@ -312,7 +327,7 @@ export function ContactForm({
 
             <div>
               <label
-                htmlFor="lastName"
+                htmlFor={fieldId('lastName')}
                 className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
                 style={{ color: textColor, fontFamily: monoFont }}
               >
@@ -320,10 +335,12 @@ export function ContactForm({
               </label>
               <input
                 type="text"
-                id="lastName"
+                id={fieldId('lastName')}
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
+                readOnly={isPreview}
+                tabIndex={isPreview ? -1 : undefined}
                 required
                 className={controlClassName}
                 style={{
@@ -339,7 +356,7 @@ export function ContactForm({
           {/* Email */}
           <div>
             <label
-              htmlFor="email"
+              htmlFor={fieldId('email')}
               className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
               style={{ color: textColor, fontFamily: monoFont }}
             >
@@ -347,10 +364,12 @@ export function ContactForm({
             </label>
             <input
               type="email"
-              id="email"
+              id={fieldId('email')}
               name="email"
               value={formData.email}
               onChange={handleChange}
+              readOnly={isPreview}
+              tabIndex={isPreview ? -1 : undefined}
               required
               className={controlClassName}
               style={{
@@ -365,17 +384,18 @@ export function ContactForm({
           {/* Enquiry Type */}
           <div>
             <label
-              htmlFor="enquiryType"
+              htmlFor={fieldId('enquiryType')}
               className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
               style={{ color: textColor, fontFamily: monoFont }}
             >
               Enquiry Type
             </label>
             <select
-              id="enquiryType"
+              id={fieldId('enquiryType')}
               name="enquiryType"
               value={formData.enquiryType}
               onChange={handleChange}
+              tabIndex={isPreview ? -1 : undefined}
               required
               className={controlClassName}
               style={{
@@ -402,17 +422,19 @@ export function ContactForm({
           {/* Message */}
           <div>
             <label
-              htmlFor="message"
+              htmlFor={fieldId('message')}
               className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
               style={{ color: textColor, fontFamily: monoFont }}
             >
               Message
             </label>
             <textarea
-              id="message"
+              id={fieldId('message')}
               name="message"
               value={formData.message}
               onChange={handleChange}
+              readOnly={isPreview}
+              tabIndex={isPreview ? -1 : undefined}
               required
               rows={4}
               className={`${controlClassName} resize-none`}
@@ -445,6 +467,7 @@ export function ContactForm({
                       value={location}
                       checked={checked}
                       onChange={() => handleCheckboxChange(location)}
+                      tabIndex={isPreview ? -1 : undefined}
                       className="sr-only peer"
                     />
                     <span
@@ -473,7 +496,8 @@ export function ContactForm({
 
             <HoverFadeButton
               active={submitButtonActive}
-              type="submit"
+              type={isPreview ? 'button' : 'submit'}
+              tabIndex={isPreview ? -1 : undefined}
               className={`px-6 md:px-8 py-2 border rounded-full ${uniformTextClass} tracking-widest w-full sm:w-auto`}
               baseBackgroundColor="transparent"
               baseBorderColor={borderColor}

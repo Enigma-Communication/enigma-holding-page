@@ -8,42 +8,63 @@ export function AnimatedWord({ color }: AnimatedWordProps) {
   const [displayText, setDisplayText] = useState('BY');
 
   useEffect(() => {
+    let cancelled = false;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      setDisplayText('BY');
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+    const show = (text: string) => {
+      if (!cancelled) {
+        setDisplayText(text);
+      }
+    };
+
     const sequence = async () => {
       // Wait 3 seconds
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await wait(3000);
       
-      while (true) {
+      while (!cancelled) {
         // Backspace BY
-        setDisplayText('B');
-        await new Promise(resolve => setTimeout(resolve, 100));
-        setDisplayText('');
-        await new Promise(resolve => setTimeout(resolve, 100));
+        show('B');
+        await wait(100);
+        show('');
+        await wait(100);
         
         // Type FOR
-        setDisplayText('F');
-        await new Promise(resolve => setTimeout(resolve, 150));
-        setDisplayText('FO');
-        await new Promise(resolve => setTimeout(resolve, 150));
-        setDisplayText('FOR');
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        show('F');
+        await wait(150);
+        show('FO');
+        await wait(150);
+        show('FOR');
+        await wait(3000);
         
         // Backspace FOR
-        setDisplayText('FO');
-        await new Promise(resolve => setTimeout(resolve, 100));
-        setDisplayText('F');
-        await new Promise(resolve => setTimeout(resolve, 100));
-        setDisplayText('');
-        await new Promise(resolve => setTimeout(resolve, 100));
+        show('FO');
+        await wait(100);
+        show('F');
+        await wait(100);
+        show('');
+        await wait(100);
         
         // Type BY
-        setDisplayText('B');
-        await new Promise(resolve => setTimeout(resolve, 150));
-        setDisplayText('BY');
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        show('B');
+        await wait(150);
+        show('BY');
+        await wait(3000);
       }
     };
 
     sequence();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (

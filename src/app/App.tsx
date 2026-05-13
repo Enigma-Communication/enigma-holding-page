@@ -159,7 +159,12 @@ export default function App() {
   const previewContentRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const lastPointerRef = useRef({ x: 0, y: 0 });
+  const pendingPointerRef = useRef<{ x: number; y: number } | null>(null);
   const lensRadiusRef = useRef(SMALL_RADIUS);
+  const lensTransitionModeRef = useRef<'active' | 'idle'>('active');
+  const pointerFrameRef = useRef<number | null>(null);
+  const scrollFrameRef = useRef<number | null>(null);
+  const formBoundsRef = useRef<DOMRectReadOnly | null>(null);
 
   // Check URL for showcase mode
   useEffect(() => {
@@ -337,21 +342,53 @@ export default function App() {
       ? 'width 1.34s cubic-bezier(0.15, 0.78, 0.72, 1), height 1.34s cubic-bezier(0.15, 0.78, 0.72, 1)'
       : 'width 0.22s ease-out, height 0.22s ease-out';
 
-  const syncLensPosition = (x: number, y: number) => {
-    lastPointerRef.current = { x, y };
+  const updateFormBounds = () => {
+    const form = contactRef.current?.querySelector('form');
+    formBoundsRef.current = form?.getBoundingClientRect() ?? null;
+  };
 
+  const isPointOverForm = (x: number, y: number) => {
+    const rect = formBoundsRef.current;
+    return !!rect && x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  };
+
+  const applyLensPosition = (x: number, y: number) => {
     if (previewMaskRef.current) {
       previewMaskRef.current.style.clipPath = `circle(${Math.round(lensRadiusRef.current)}px at ${x}px ${y}px)`;
     }
 
     if (cursorRef.current) {
-      cursorRef.current.style.left = `${x}px`;
-      cursorRef.current.style.top = `${y}px`;
+      cursorRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
     }
   };
 
+  const syncLensPosition = (x: number, y: number) => {
+    lastPointerRef.current = { x, y };
+    pendingPointerRef.current = { x, y };
+
+    if (pointerFrameRef.current !== null) return;
+
+    pointerFrameRef.current = window.requestAnimationFrame(() => {
+      pointerFrameRef.current = null;
+
+      const point = pendingPointerRef.current;
+      if (!point) return;
+
+      applyLensPosition(point.x, point.y);
+    });
+  };
+
   const syncLensRadius = (radius: number, idle: boolean) => {
+    const nextMode = idle ? 'idle' : 'active';
+    const nextRadius = Math.round(radius);
+    const currentRadius = Math.round(lensRadiusRef.current);
+
+    if (nextRadius === currentRadius && lensTransitionModeRef.current === nextMode) {
+      return;
+    }
+
     lensRadiusRef.current = radius;
+    lensTransitionModeRef.current = nextMode;
 
     const { x, y } = lastPointerRef.current;
 
@@ -369,9 +406,20 @@ export default function App() {
   };
 
   const syncPreviewScroll = () => {
+    updateFormBounds();
+
     if (previewContentRef.current) {
-      previewContentRef.current.style.transform = `translateY(-${window.scrollY}px)`;
+      previewContentRef.current.style.transform = `translate3d(0, -${window.scrollY}px, 0)`;
     }
+  };
+
+  const schedulePreviewScrollSync = () => {
+    if (scrollFrameRef.current !== null) return;
+
+    scrollFrameRef.current = window.requestAnimationFrame(() => {
+      scrollFrameRef.current = null;
+      syncPreviewScroll();
+    });
   };
 
   useEffect(() => {
@@ -392,8 +440,7 @@ export default function App() {
       syncLensRadius(SMALL_RADIUS, false);
 
       // If the cursor is over the form, keep the lens small (no idle expansion)
-      const el = document.elementFromPoint(x, y) as HTMLElement | null;
-      const overForm = !!el?.closest('#contact form');
+      const overForm = isPointOverForm(x, y);
       isOverFormRef.current = overForm;
 
       if (idleTimerRef.current) {
@@ -420,22 +467,47 @@ export default function App() {
       syncLensPosition(x, y);
     };
 
-    const handleScroll = () => syncPreviewScroll();
+    const handleScroll = () => schedulePreviewScrollSync();
+    const handleResize = () => {
+      updateFormBounds();
+      syncLensPosition(lastPointerRef.current.x, lastPointerRef.current.y);
+    };
 
     const initialX = window.innerWidth / 2;
     const initialY = window.innerHeight / 2;
-    syncLensPosition(initialX, initialY);
+    lastPointerRef.current = { x: initialX, y: initialY };
+    applyLensPosition(initialX, initialY);
     syncLensRadius(SMALL_RADIUS, false);
     syncPreviewScroll();
 
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined' && contactRef.current
+        ? new ResizeObserver(updateFormBounds)
+        : null;
+    resizeObserver?.observe(contactRef.current);
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseout', handleMouseOut);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseout', handleMouseOut);
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+      resizeObserver?.disconnect();
+
+      if (pointerFrameRef.current !== null) {
+        window.cancelAnimationFrame(pointerFrameRef.current);
+        pointerFrameRef.current = null;
+      }
+
+      if (scrollFrameRef.current !== null) {
+        window.cancelAnimationFrame(scrollFrameRef.current);
+        scrollFrameRef.current = null;
+      }
+
       if (idleTimerRef.current) {
         clearTimeout(idleTimerRef.current);
         idleTimerRef.current = null;
@@ -467,7 +539,6 @@ export default function App() {
     setTimeout(() => {
       setCurrentSchemeIndex((prev) => (prev + 1) % colorSchemes.length);
       setIsTransitioning(false);
-      setIsIdle(false);
     }, 800);
   };
 
@@ -670,8 +741,9 @@ export default function App() {
             <div
               ref={previewContentRef}
               style={{
-                transform: 'translateY(0px)',
+                transform: 'translate3d(0, 0, 0)',
                 willChange: 'transform',
+                contain: 'layout paint style',
               }}
             >
               {/* Hero Section Preview */}
@@ -774,6 +846,8 @@ export default function App() {
 
               <div className="py-16 px-4 md:px-8">
                 <ContactForm
+                  formId="contact-form-preview"
+                  isPreview
                   backgroundColor={nextScheme.bg}
                   textColor={nextScheme.text}
                   borderColor={nextScheme.text}
@@ -800,9 +874,9 @@ export default function App() {
                   top: '0px',
                   width: `${SMALL_RADIUS * 2}px`,
                   height: `${SMALL_RADIUS * 2}px`,
-                  transform: 'translate(-50%, -50%)',
+                  transform: 'translate3d(0, 0, 0) translate(-50%, -50%)',
                   transition: getCursorTransition(false),
-                  willChange: 'width, height',
+                  willChange: 'transform, width, height',
                 }}
               />
             )}
@@ -842,9 +916,4 @@ export default function App() {
       </AnimatePresence>
     </div>
   );
-} 
-
-function setIsIdle(arg0: boolean) {
-  throw new Error('Function not implemented.');
 }
-
