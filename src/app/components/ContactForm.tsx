@@ -224,6 +224,7 @@ export function ContactForm({
   const displayFont = "'Enigma-EnigmaLargeRoman', serif";
   const monoFont = "'OCR-B', 'OCR B', 'Courier Prime', monospace";
   const uniformTextClass = 'text-[11px] md:text-xs';
+  const lineWidth = '2px';
   const controlClassName =
     `w-full pb-2 bg-transparent border-0 border-b outline-none focus:border-opacity-100 transition-[color,border-color,opacity] duration-300 ease-out ${uniformTextClass}`;
   const locationOptions = ['Sydney', 'Newcastle', 'Brisbane'] as const;
@@ -320,7 +321,7 @@ export function ContactForm({
                 style={{
                   color: textColor,
                   borderBottomColor: textColor,
-                  borderBottomWidth: '1px',
+                  borderBottomWidth: lineWidth,
                   fontFamily: monoFont,
                 }}
               />
@@ -347,7 +348,7 @@ export function ContactForm({
                 style={{
                   color: textColor,
                   borderBottomColor: textColor,
-                  borderBottomWidth: '1px',
+                  borderBottomWidth: lineWidth,
                   fontFamily: monoFont,
                 }}
               />
@@ -376,7 +377,7 @@ export function ContactForm({
               style={{
                 color: textColor,
                 borderBottomColor: textColor,
-                borderBottomWidth: '1px',
+                borderBottomWidth: lineWidth,
                 fontFamily: monoFont,
               }}
             />
@@ -402,7 +403,7 @@ export function ContactForm({
               style={{
                 color: textColor,
                 borderBottomColor: textColor,
-                borderBottomWidth: '1px',
+                borderBottomWidth: lineWidth,
                 fontFamily: monoFont,
                 appearance: 'none',
                 WebkitAppearance: 'none',
@@ -442,7 +443,7 @@ export function ContactForm({
               style={{
                 color: textColor,
                 borderBottomColor: textColor,
-                borderBottomWidth: '1px',
+                borderBottomWidth: lineWidth,
                 fontFamily: monoFont,
               }}
             />
@@ -473,7 +474,7 @@ export function ContactForm({
                     />
                     <span
                       aria-hidden="true"
-                      className="flex size-[18px] shrink-0 items-center justify-center border transition-[opacity,border-color,background-color] duration-300 ease-out peer-focus-visible:opacity-85"
+                      className="flex size-[18px] shrink-0 items-center justify-center border-2 transition-[opacity,border-color,background-color] duration-300 ease-out peer-focus-visible:opacity-85"
                       style={{
                         borderColor,
                         backgroundColor: 'transparent',
@@ -499,7 +500,7 @@ export function ContactForm({
               active={submitButtonActive}
               type={isPreview ? 'button' : 'submit'}
               tabIndex={isPreview ? -1 : undefined}
-              className={`px-6 md:px-8 py-2 border rounded-full ${uniformTextClass} tracking-widest w-full sm:w-auto`}
+              className={`px-6 md:px-8 py-2 border-2 rounded-full ${uniformTextClass} tracking-widest w-full sm:w-auto`}
               baseBackgroundColor="transparent"
               baseBorderColor={borderColor}
               baseTextColor={textColor}

@@ -51,11 +51,12 @@ const colorSchemes: ColorScheme[] = [
 
 const heroInfoMonoFont = "'OCR-B', 'OCR B', 'Courier Prime', monospace";
 const heroDisplayFont = "'Enigma-EnigmaLargeRoman', serif";
+const bodyCopyClass = 'text-[11px] md:text-xs';
 const heroHeadingWrapClass = 'w-full text-center mt-16 md:mt-32 lg:mt-36';
 const heroHeadingClass =
   'mx-auto max-w-[88vw] sm:max-w-[90vw] md:max-w-[94vw] text-[2.65rem] sm:text-[3.75rem] md:text-[5.9rem] lg:text-[6.9rem] xl:text-[8rem] 2xl:text-[9.4rem] tracking-tight leading-[0.86] mb-5 md:mb-6';
 const heroContactButtonClass =
-  'mt-10 sm:mt-6 md:mt-8 w-full sm:w-auto px-6 md:px-8 py-2 border rounded-full text-[11px] md:text-xs tracking-widest';
+  `mt-10 sm:mt-6 md:mt-8 w-full sm:w-auto px-6 md:px-8 py-2 border-2 rounded-full ${bodyCopyClass} tracking-widest`;
 
 function Footer({ textColor }: { textColor: string }) {
   return (
@@ -63,11 +64,10 @@ function Footer({ textColor }: { textColor: string }) {
       <div className="w-full max-w-7xl mx-auto px-4 md:px-8 grid gap-6 md:gap-10 md:grid-cols-2 md:items-end">
         {/* Left */}
         <div
-          className="order-2 md:order-1 flex items-baseline gap-6 md:gap-12 flex-wrap md:justify-start mt-2 md:mt-0"
+          className={`order-2 md:order-1 flex items-baseline gap-6 md:gap-12 flex-wrap md:justify-start mt-2 md:mt-0 ${bodyCopyClass}`}
           style={{
             color: textColor,
             fontFamily: "'OCR-B', 'OCR B', monospace",
-            fontSize: "clamp(11px, 0.72vw, 12px)",
             letterSpacing: "0.02em",
           }}
         >
@@ -81,11 +81,10 @@ function Footer({ textColor }: { textColor: string }) {
 
         {/* Right */}
         <div
-          className="order-1 md:order-2 max-w-[620px] md:max-w-none"
+          className={`order-1 md:order-2 max-w-[620px] md:max-w-none ${bodyCopyClass}`}
           style={{
             color: textColor,
             fontFamily: "'OCR-B', 'OCR B', monospace",
-            fontSize: "clamp(11px, 0.72vw, 12px)",
             lineHeight: 1.55,
             letterSpacing: "0.02em",
             opacity: 0.9,
@@ -228,7 +227,7 @@ export default function App() {
                     </span>
 
                     <div
-                      className="mt-3 text-xs text-center mx-auto max-w-[24rem]"
+                      className={`mt-3 ${bodyCopyClass} text-center mx-auto max-w-[24rem]`}
                     style={{ color: scheme.text, fontFamily: "'OCR-B', 'OCR B', monospace" }}
                     >
                       We'll be right back.
@@ -604,7 +603,7 @@ export default function App() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="mt-3 text-xs text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                className={`mt-3 ${bodyCopyClass} text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out`}
                 style={{ color: currentScheme.text, fontFamily: heroInfoMonoFont }}
               >
                 We'll be right back.
@@ -764,7 +763,7 @@ export default function App() {
                       </span>
 
                       <div
-                        className="mt-3 text-xs text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                        className={`mt-3 ${bodyCopyClass} text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out`}
                         style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
                       >
                         We'll be right back.
