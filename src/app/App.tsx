@@ -63,7 +63,7 @@ function HeroHeadingSvg({ color }: { color: string }) {
 
   return (
     <div
-      className="mx-auto max-w-7xl mb-5 md:mb-6"
+      className="mx-auto max-w-7xl mb-0 md:mb-6"
       style={{ color }}
       dangerouslySetInnerHTML={{ __html: svgHtml }}
     />
@@ -92,7 +92,9 @@ const heroDisplayFont = "'Enigma-EnigmaLargeRoman', serif";
 const utilityMonoClass = 'text-[13px] md:text-sm';
 const serifBodyClass = 'text-[15px] md:text-[17px]';
 const heroTaglineClass = utilityMonoClass;
-const heroHeadingWrapClass = 'w-full max-w-7xl mx-auto text-center mt-auto pt-16 md:pt-0 md:mt-10 lg:mt-12';
+const heroHeadingWrapClass = 'w-full max-w-7xl mx-auto text-center mt-auto pb-2 md:pb-0 md:mt-10 lg:mt-12';
+const mobileHeroMetaClass = 'md:hidden w-full';
+const mobileHeroTaglineClass = 'mt-4 text-[13px] text-center mx-auto max-w-[24rem]';
 
 function Footer({ textColor }: { textColor: string }) {
   return (
@@ -248,7 +250,7 @@ export default function App() {
           >
             {/* Hero Section */}
             <div className="min-h-screen flex flex-col py-8 md:py-0">
-              <div className="relative flex flex-col items-center justify-start flex-1 pt-1 px-4 md:pt-2 md:px-8">
+              <div className="relative flex flex-col items-center justify-start min-h-screen pt-1 px-4 md:pt-2 md:px-8">
                 <div className="absolute top-4 md:top-8 left-0 right-0 mx-auto w-full max-w-7xl z-10">
                   <WordmarkSvg color={scheme.text} />
                 </div>
@@ -282,7 +284,7 @@ export default function App() {
                   </div>
 
                   {/* Mobile: date + countdown row, tagline underneath centred */}
-                  <div className="md:hidden w-full">
+                  <div className={mobileHeroMetaClass}>
                     <div className="flex items-start justify-between">
                       <span
                         className="tracking-wider text-lg"
@@ -299,7 +301,7 @@ export default function App() {
                     </div>
 
                     <div
-                      className="mt-4 text-[13px] text-center mx-auto max-w-[24rem]"
+                      className={mobileHeroTaglineClass}
                     style={{ color: scheme.text, fontFamily: "'OCR-B', 'OCR B', monospace" }}
                     >
                       WE'LL BE RIGHT BACK.
@@ -309,18 +311,20 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Main Heading */}
-                <div className={heroHeadingWrapClass}>
-                  <HeroHeadingSvg color={scheme.text} />
+                <div className="w-full max-w-7xl flex flex-col flex-1">
+                  {/* Main Heading */}
+                  <div className={heroHeadingWrapClass}>
+                    <HeroHeadingSvg color={scheme.text} />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Spacer between hero CTA and contact section */}
-            <div className="h-24 md:h-28" />
+            <div className="h-16 sm:h-20 md:h-40 lg:h-48" />
 
             {/* Contact Section */}
-            <div id="contact" className="py-12 md:py-8">
+            <div id="contact" className="pt-6 pb-12 md:py-8">
               <ContactForm
                 backgroundColor={scheme.bg}
                 textColor={scheme.text}
@@ -560,10 +564,10 @@ export default function App() {
       onClick={handleClick}
     >
       {/* Hero Section */}
-      <div className="h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col">
         {/* Main Content - Current Color Scheme */}
-        <div ref={contentRef} className="relative z-10 flex flex-col items-center justify-start h-full pt-0.5 px-4 md:pt-1 md:px-8">
-          <div className="w-full max-w-7xl">
+        <div ref={contentRef} className="relative z-10 flex flex-col items-center justify-start min-h-screen pt-0.5 px-4 md:pt-1 md:px-8">
+          <div className="w-full max-w-7xl flex flex-col flex-1">
             <div className="mt-0.5 md:mt-1">
               <WordmarkSvg color={currentScheme.text} />
             </div>
@@ -604,7 +608,7 @@ export default function App() {
                 </motion.span>
               </div>
 
-              <div className="md:hidden w-full">
+              <div className={mobileHeroMetaClass}>
                 <div className="flex items-start justify-between">
                   <motion.span
                     initial={{ opacity: 0 }}
@@ -631,7 +635,7 @@ export default function App() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="mt-2 text-[13px] text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                  className={`${mobileHeroTaglineClass} transition-colors duration-500 ease-out`}
                   style={{ color: currentScheme.text, fontFamily: heroInfoMonoFont }}
                 >
                   WE'LL BE RIGHT BACK.
@@ -640,28 +644,27 @@ export default function App() {
                 </motion.div>
               </div>
             </div>
+            {/* Main Heading */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className={heroHeadingWrapClass}
+            >
+              <HeroHeadingSvg color={currentScheme.text} />
+            </motion.div>
           </div>
-
-          {/* Main Heading */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className={heroHeadingWrapClass}
-          >
-            <HeroHeadingSvg color={currentScheme.text} />
-          </motion.div>
         </div>
       </div>
 
       {/* Spacer between hero CTA and contact section */}
-      <div className="h-24 md:h-28" />
+      <div className="h-16 sm:h-20 md:h-40 lg:h-48" />
 
       {/* Contact Section - Current Color Scheme */}
       <div
         id="contact"
         ref={contactRef}
-        className="relative z-10 py-12 md:py-8"
+        className="relative z-10 pt-6 pb-12 md:pt-14 md:pb-8"
       >
         <ContactForm
           backgroundColor={currentScheme.bg}
@@ -699,9 +702,9 @@ export default function App() {
               }}
             >
               {/* Hero Section Preview */}
-              <div className="h-screen flex flex-col">
-                <div className="relative flex flex-col items-center justify-start h-full pt-0.5 px-4 md:pt-1 md:px-8">
-                  <div className="w-full max-w-7xl">
+              <div className="min-h-screen flex flex-col">
+                <div className="relative flex flex-col items-center justify-start min-h-screen pt-0.5 px-4 md:pt-1 md:px-8">
+                  <div className="w-full max-w-7xl flex flex-col flex-1">
                     <div className="mt-0.5 md:mt-1">
                       <WordmarkSvg color={nextScheme.text} />
                     </div>
@@ -733,7 +736,7 @@ export default function App() {
                         </span>
                       </div>
 
-                      <div className="md:hidden w-full">
+                      <div className={mobileHeroMetaClass}>
                         <div className="flex items-start justify-between">
                           <span
                             className="tracking-wider text-lg transition-colors duration-500 ease-out"
@@ -750,7 +753,7 @@ export default function App() {
                         </div>
 
                         <div
-                          className="mt-2 text-[13px] text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                          className={`${mobileHeroTaglineClass} transition-colors duration-500 ease-out`}
                           style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
                         >
                           WE'LL BE RIGHT BACK.
@@ -768,9 +771,9 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="h-24 md:h-28" />
+              <div className="h-16 sm:h-20 md:h-40 lg:h-48" />
 
-              <div className="py-12 md:py-8">
+              <div className="pt-6 pb-12 md:pt-14 md:pb-8">
                 <ContactForm
                   formId="contact-form-preview"
                   isPreview
