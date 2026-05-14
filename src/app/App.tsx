@@ -92,7 +92,7 @@ const heroDisplayFont = "'Enigma-EnigmaLargeRoman', serif";
 const utilityMonoClass = 'text-[13px] md:text-sm';
 const serifBodyClass = 'text-[15px] md:text-[17px]';
 const heroTaglineClass = utilityMonoClass;
-const heroHeadingWrapClass = 'w-full max-w-7xl mx-auto text-center mt-44 md:mt-10 lg:mt-12';
+const heroHeadingWrapClass = 'w-full max-w-7xl mx-auto text-center mt-auto pt-16 md:pt-0 md:mt-10 lg:mt-12';
 
 function Footer({ textColor }: { textColor: string }) {
   return (
@@ -282,7 +282,7 @@ export default function App() {
                   </div>
 
                   {/* Mobile: date + countdown row, tagline underneath centred */}
-                  <div className="md:hidden">
+                  <div className="md:hidden w-full">
                     <div className="flex items-start justify-between">
                       <span
                         className="tracking-wider text-lg"
@@ -320,7 +320,7 @@ export default function App() {
             <div className="h-24 md:h-28" />
 
             {/* Contact Section */}
-            <div id="contact" className="py-12 md:py-8 px-4 md:px-8">
+            <div id="contact" className="py-12 md:py-8">
               <ContactForm
                 backgroundColor={scheme.bg}
                 textColor={scheme.text}
@@ -604,7 +604,7 @@ export default function App() {
                 </motion.span>
               </div>
 
-              <div className="md:hidden w-full max-w-xs mx-auto">
+              <div className="md:hidden w-full">
                 <div className="flex items-start justify-between">
                   <motion.span
                     initial={{ opacity: 0 }}
@@ -661,7 +661,7 @@ export default function App() {
       <div
         id="contact"
         ref={contactRef}
-        className="relative z-10 py-12 md:py-8 px-4 md:px-8"
+        className="relative z-10 py-12 md:py-8"
       >
         <ContactForm
           backgroundColor={currentScheme.bg}
@@ -733,7 +733,7 @@ export default function App() {
                         </span>
                       </div>
 
-                      <div className="md:hidden w-full max-w-xs mx-auto">
+                      <div className="md:hidden w-full">
                         <div className="flex items-start justify-between">
                           <span
                             className="tracking-wider text-lg transition-colors duration-500 ease-out"
@@ -770,7 +770,7 @@ export default function App() {
 
               <div className="h-24 md:h-28" />
 
-              <div className="py-12 md:py-8 px-4 md:px-8">
+              <div className="py-12 md:py-8">
                 <ContactForm
                   formId="contact-form-preview"
                   isPreview
