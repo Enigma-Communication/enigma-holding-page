@@ -96,7 +96,7 @@ const heroHeadingWrapClass = 'w-full max-w-7xl mx-auto text-center mt-44 md:mt-1
 
 function Footer({ textColor }: { textColor: string }) {
   return (
-    <footer className="relative z-10 py-10 md:py-12 mt-10 md:mt-8">
+    <footer className="relative z-10 mt-16 md:mt-14 pt-8 md:pt-12 pb-10 md:pb-12">
       <div className="w-full max-w-7xl mx-auto px-4 md:px-8 grid gap-6 md:gap-12 md:grid-cols-2 md:items-end">
         {/* Left */}
         <div
@@ -258,7 +258,7 @@ export default function App() {
                   {/* Desktop: date | tagline | countdown on one line */}
                   <div className="hidden md:grid grid-cols-3 items-start">
                     <span
-                      className="tracking-wider md:text-[39px]"
+                      className="tracking-wider md:text-[35px]"
                       style={{ color: scheme.text, fontFamily: heroDateFont }}
                     >
                       {LAUNCH_DATE_LABEL}
@@ -274,7 +274,7 @@ export default function App() {
                     </div>
 
                     <span
-                      className="tracking-wider md:text-[39px] text-right"
+                      className="tracking-wider md:text-[35px] text-right"
                       style={{ color: scheme.text, fontFamily: heroDateFont }}
                     >
                       {countdown}
@@ -575,7 +575,7 @@ export default function App() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="tracking-wider md:text-[39px] transition-colors duration-500 ease-out"
+                  className="tracking-wider md:text-[35px] transition-colors duration-500 ease-out"
                   style={{ color: currentScheme.text, fontFamily: heroDateFont }}
                 >
                   {LAUNCH_DATE_LABEL}
@@ -597,7 +597,7 @@ export default function App() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="tracking-wider md:text-[39px] text-right transition-colors duration-500 ease-out"
+                  className="tracking-wider md:text-[35px] text-right transition-colors duration-500 ease-out"
                   style={{ color: currentScheme.text, fontFamily: heroDateFont }}
                 >
                   {countdown}
@@ -710,7 +710,7 @@ export default function App() {
                     <div className="mt-0">
                       <div className="hidden md:grid grid-cols-3 items-start">
                         <span
-                          className="tracking-wider md:text-[39px] transition-colors duration-500 ease-out"
+                          className="tracking-wider md:text-[35px] transition-colors duration-500 ease-out"
                           style={{ color: nextScheme.text, fontFamily: heroDateFont }}
                         >
                           {LAUNCH_DATE_LABEL}
@@ -726,7 +726,7 @@ export default function App() {
                         </div>
 
                         <span
-                          className="tracking-wider md:text-[39px] text-right transition-colors duration-500 ease-out"
+                          className="tracking-wider md:text-[35px] text-right transition-colors duration-500 ease-out"
                           style={{ color: nextScheme.text, fontFamily: heroDateFont }}
                         >
                           {countdown}
