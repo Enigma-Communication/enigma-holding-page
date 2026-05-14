@@ -51,11 +51,11 @@ const colorSchemes: ColorScheme[] = [
 
 const heroInfoMonoFont = "'OCR-B', 'OCR B', 'Courier Prime', monospace";
 const heroDisplayFont = "'Enigma-EnigmaLargeRoman', serif";
-const heroHeadingWrapClass = 'text-center mt-16 md:mt-32 lg:mt-36';
+const heroHeadingWrapClass = 'w-full text-center mt-16 md:mt-32 lg:mt-36';
 const heroHeadingClass =
   'mx-auto max-w-[88vw] sm:max-w-[90vw] md:max-w-[94vw] text-[2.65rem] sm:text-[3.75rem] md:text-[5.9rem] lg:text-[6.9rem] xl:text-[8rem] 2xl:text-[9.4rem] tracking-tight leading-[0.86] mb-5 md:mb-6';
 const heroContactButtonClass =
-  'mt-6 md:mt-8 px-6 md:px-8 py-2 border rounded-full text-[11px] md:text-xs tracking-widest';
+  'mt-10 sm:mt-6 md:mt-8 w-full sm:w-auto px-6 md:px-8 py-2 border rounded-full text-[11px] md:text-xs tracking-widest';
 
 function Footer({ textColor }: { textColor: string }) {
   return (
@@ -228,7 +228,7 @@ export default function App() {
                     </span>
 
                     <div
-                      className="text-xs text-center mx-auto max-w-[24rem]"
+                      className="mt-3 text-xs text-center mx-auto max-w-[24rem]"
                     style={{ color: scheme.text, fontFamily: "'OCR-B', 'OCR B', monospace" }}
                     >
                       We'll be right back.
@@ -604,7 +604,7 @@ export default function App() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-xs text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                className="mt-3 text-xs text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
                 style={{ color: currentScheme.text, fontFamily: heroInfoMonoFont }}
               >
                 We'll be right back.
@@ -764,7 +764,7 @@ export default function App() {
                       </span>
 
                       <div
-                        className="text-xs text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                        className="mt-3 text-xs text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
                         style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
                       >
                         We'll be right back.
