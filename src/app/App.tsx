@@ -54,6 +54,8 @@ const heroDisplayFont = "'Enigma-EnigmaLargeRoman', serif";
 const heroHeadingWrapClass = 'text-center mt-16 md:mt-32 lg:mt-36';
 const heroHeadingClass =
   'mx-auto max-w-[88vw] sm:max-w-[90vw] md:max-w-[94vw] text-[2.65rem] sm:text-[3.75rem] md:text-[5.9rem] lg:text-[6.9rem] xl:text-[8rem] 2xl:text-[9.4rem] tracking-tight leading-[0.86] mb-5 md:mb-6';
+const heroContactButtonClass =
+  'mt-6 md:mt-8 px-6 md:px-8 py-2 border rounded-full text-[11px] md:text-xs tracking-widest';
 
 function Footer({ textColor }: { textColor: string }) {
   return (
@@ -291,7 +293,7 @@ export default function App() {
 
                   <HoverFadeButton
                     active={isHeroButtonActive}
-                    className="mt-6 md:mt-8 px-5 md:px-6 py-2 border rounded-full text-xs md:text-sm tracking-wider"
+                    className={heroContactButtonClass}
                     baseBackgroundColor="transparent"
                     baseBorderColor={scheme.text}
                     baseTextColor={scheme.text}
@@ -685,7 +687,7 @@ export default function App() {
 
             <HoverFadeButton
               active={isHeroButtonActive}
-              className="mt-6 md:mt-8 px-5 md:px-6 py-2 border rounded-full text-xs md:text-sm tracking-wider"
+              className={heroContactButtonClass}
               baseBackgroundColor="transparent"
               baseBorderColor={currentScheme.text}
               baseTextColor={currentScheme.text}
@@ -826,7 +828,7 @@ export default function App() {
 
                     <HoverFadeButton
                       active={isHeroButtonActive}
-                      className="mt-6 md:mt-8 px-5 md:px-6 py-2 border rounded-full text-xs md:text-sm tracking-wider"
+                      className={heroContactButtonClass}
                       baseBackgroundColor="transparent"
                       baseBorderColor={nextScheme.text}
                       baseTextColor={nextScheme.text}

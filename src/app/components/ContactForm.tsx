@@ -221,6 +221,7 @@ export function ContactForm({
 
   const isChecked = (locationLabel: string) => getSelectedLocation() === locationLabel;
 
+  const displayFont = "'Enigma-EnigmaLargeRoman', serif";
   const monoFont = "'OCR-B', 'OCR B', 'Courier Prime', monospace";
   const uniformTextClass = 'text-[11px] md:text-xs';
   const controlClassName =
@@ -243,7 +244,7 @@ export function ContactForm({
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 md:mb-6 tracking-tight transition-colors duration-300 ease-out"
             style={{
               color: textColor,
-              fontFamily: monoFont,
+              fontFamily: displayFont,
             }}
           >
             Contact us
