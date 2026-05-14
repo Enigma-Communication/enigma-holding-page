@@ -227,7 +227,7 @@ export function ContactForm({
   const lineWidth = '2px';
   const controlClassName =
     `w-full pb-2 bg-transparent border-0 border-b outline-none focus:border-opacity-100 transition-[color,border-color,opacity] duration-300 ease-out ${uniformTextClass}`;
-  const locationOptions = ['Sydney', 'Newcastle', 'Brisbane'] as const;
+  const locationOptions = ['Sydney', 'Newcastle'] as const;
   const fieldId = (name: keyof FormData) => (isPreview ? `${formId}-${name}` : name);
 
   return (
