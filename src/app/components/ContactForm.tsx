@@ -222,11 +222,13 @@ export function ContactForm({
   const isChecked = (locationLabel: string) => getSelectedLocation() === locationLabel;
 
   const displayFont = "'Enigma-EnigmaLargeRoman', serif";
-  const monoFont = "'OCR-B', 'OCR B', 'Courier Prime', monospace";
-  const uniformTextClass = 'text-[11px] md:text-xs';
+  const monoFont = "'ABCFavoritMono', monospace";
+  const utilityMonoClass = 'text-[13px] md:text-sm';
+  const serifBodyClass = 'text-[15px] md:text-[17px]';
+  const typedFieldClass = 'text-[15px] md:text-[17px]';
   const lineWidth = '2px';
   const controlClassName =
-    `w-full pb-2 bg-transparent border-0 border-b outline-none focus:border-opacity-100 transition-[color,border-color,opacity] duration-300 ease-out ${uniformTextClass}`;
+    `w-full pb-2 bg-transparent border-0 border-b outline-none focus:border-opacity-100 transition-[color,border-color,opacity] duration-300 ease-out ${typedFieldClass}`;
   const locationOptions = ['Sydney', 'Newcastle'] as const;
   const fieldId = (name: keyof FormData) => (isPreview ? `${formId}-${name}` : name);
 
@@ -238,11 +240,11 @@ export function ContactForm({
       className="w-full max-w-7xl mx-auto px-4 md:px-8"
       style={{ ['--enigma-accent' as string]: textColor }}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-8 md:gap-20 lg:gap-24 items-start">
         {/* Left Column - Heading */}
         <div>
           <h2
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 md:mb-6 tracking-tight transition-colors duration-300 ease-out"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-[64px] mb-4 md:mb-10 tracking-tight transition-colors duration-300 ease-out"
             style={{
               color: textColor,
               fontFamily: displayFont,
@@ -251,8 +253,8 @@ export function ContactForm({
             Contact us
           </h2>
           <p
-            className={`${uniformTextClass} leading-relaxed max-w-md`}
-            style={{ color: textColor, fontFamily: monoFont }}
+            className={`${serifBodyClass} leading-[1.2] max-w-md md:max-w-[30rem]`}
+            style={{ color: textColor, fontFamily: "'ABCGaisyr-Light', sans-serif" }}
           >
             Interested in working together? Fill out some info and we will be in touch shortly. We can't wait to hear from you!
           </p>
@@ -268,7 +270,7 @@ export function ContactForm({
           data-netlify={isPreview ? undefined : 'true'}
           netlify-honeypot={isPreview ? undefined : 'bot-field'}
           onSubmit={isPreview ? undefined : handleSubmit}
-          className="space-y-6 md:space-y-8"
+          className="space-y-6 md:space-y-7 lg:pt-1"
           onFocus={isPreview ? undefined : handleFocus}
           onBlur={isPreview ? undefined : handleBlur}
           aria-hidden={isPreview || undefined}
@@ -290,8 +292,8 @@ export function ContactForm({
               className="py-10 md:py-14"
             >
               <p
-                className={`${uniformTextClass} leading-relaxed`}
-                style={{ color: textColor, fontFamily: monoFont }}
+                className={`${serifBodyClass} leading-[1.2]`}
+                style={{ color: textColor, fontFamily: "'ABCGaisyr-Light', sans-serif" }}
               >
                 Thank you for your enquiry, someone will be in contact soon.
               </p>
@@ -299,14 +301,14 @@ export function ContactForm({
           ) : (
           <>
           {/* First Name and Last Name */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-7">
             <div>
               <label
                 htmlFor={fieldId('firstName')}
-                className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
+                className={`block ${utilityMonoClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
                 style={{ color: textColor, fontFamily: monoFont }}
               >
-                First Name
+                FIRST NAME
               </label>
               <input
                 type="text"
@@ -322,7 +324,7 @@ export function ContactForm({
                   color: textColor,
                   borderBottomColor: textColor,
                   borderBottomWidth: lineWidth,
-                  fontFamily: monoFont,
+                  fontFamily: "'ABCGaisyr-Light', sans-serif",
                 }}
               />
             </div>
@@ -330,10 +332,10 @@ export function ContactForm({
             <div>
               <label
                 htmlFor={fieldId('lastName')}
-                className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
+                className={`block ${utilityMonoClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
                 style={{ color: textColor, fontFamily: monoFont }}
               >
-                Last Name
+                LAST NAME
               </label>
               <input
                 type="text"
@@ -349,7 +351,7 @@ export function ContactForm({
                   color: textColor,
                   borderBottomColor: textColor,
                   borderBottomWidth: lineWidth,
-                  fontFamily: monoFont,
+                  fontFamily: "'ABCGaisyr-Light', sans-serif",
                 }}
               />
             </div>
@@ -359,10 +361,10 @@ export function ContactForm({
           <div>
             <label
               htmlFor={fieldId('email')}
-              className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
+              className={`block ${utilityMonoClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
               style={{ color: textColor, fontFamily: monoFont }}
             >
-              Email
+              EMAIL
             </label>
             <input
               type="email"
@@ -378,7 +380,7 @@ export function ContactForm({
                 color: textColor,
                 borderBottomColor: textColor,
                 borderBottomWidth: lineWidth,
-                fontFamily: monoFont,
+                fontFamily: "'ABCGaisyr-Light', sans-serif",
               }}
             />
           </div>
@@ -387,10 +389,10 @@ export function ContactForm({
           <div>
             <label
               htmlFor={fieldId('enquiryType')}
-              className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
+              className={`block ${utilityMonoClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
               style={{ color: textColor, fontFamily: monoFont }}
             >
-              Enquiry Type
+              ENQUIRY TYPE
             </label>
             <select
               id={fieldId('enquiryType')}
@@ -404,7 +406,7 @@ export function ContactForm({
                 color: textColor,
                 borderBottomColor: textColor,
                 borderBottomWidth: lineWidth,
-                fontFamily: monoFont,
+                fontFamily: "'ABCGaisyr-Light', sans-serif",
                 appearance: 'none',
                 WebkitAppearance: 'none',
                 MozAppearance: 'none',
@@ -425,10 +427,10 @@ export function ContactForm({
           <div>
             <label
               htmlFor={fieldId('message')}
-              className={`block ${uniformTextClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
+              className={`block ${utilityMonoClass} mb-2 tracking-wider transition-colors duration-300 ease-out`}
               style={{ color: textColor, fontFamily: monoFont }}
             >
-              Message
+              MESSAGE
             </label>
             <textarea
               id={fieldId('message')}
@@ -444,19 +446,19 @@ export function ContactForm({
                 color: textColor,
                 borderBottomColor: textColor,
                 borderBottomWidth: lineWidth,
-                fontFamily: monoFont,
+                fontFamily: "'ABCGaisyr-Light', sans-serif",
               }}
             />
           </div>
 
           {formError ? (
-            <p className={uniformTextClass} style={{ color: textColor, fontFamily: monoFont, opacity: 0.9 }}>
+            <p className={utilityMonoClass} style={{ color: textColor, fontFamily: monoFont, opacity: 0.9 }}>
               {formError}
             </p>
           ) : null}
 
           {/* Checkboxes and Submit */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 md:gap-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 md:gap-8 pt-2 md:pt-3">
             <div className="flex flex-wrap gap-4 md:gap-6">
               {locationOptions.map((location) => {
                 const checked = isChecked(location);
@@ -488,7 +490,7 @@ export function ContactForm({
                         }}
                       />
                     </span>
-                    <span className={`${uniformTextClass} uppercase`} style={{ color: textColor, fontFamily: monoFont }}>
+                    <span className={`${utilityMonoClass} uppercase`} style={{ color: textColor, fontFamily: monoFont }}>
                       {location}
                     </span>
                   </label>
@@ -500,7 +502,7 @@ export function ContactForm({
               active={submitButtonActive}
               type={isPreview ? 'button' : 'submit'}
               tabIndex={isPreview ? -1 : undefined}
-              className={`px-6 md:px-8 py-2 border-2 rounded-full ${uniformTextClass} tracking-widest w-full sm:w-auto`}
+              className={`px-6 md:px-8 py-2 border-2 rounded-full ${utilityMonoClass} tracking-widest w-full sm:w-auto`}
               baseBackgroundColor="transparent"
               baseBorderColor={borderColor}
               baseTextColor={textColor}

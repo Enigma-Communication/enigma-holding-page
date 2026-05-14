@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { AnimatedWord } from './components/AnimatedWord';
 import { ContactForm } from './components/ContactForm';
-import { HoverFadeButton } from './components/HoverFadeButton';
+import heroHeadingSvgRaw from '../assets/Images/hero-heading.svg?raw';
+import wordmarkSvgRaw from '../assets/Images/Wordmark.svg?raw';
 
 function MadeWordmark({ color }: { color: string }) {
   return (
@@ -35,44 +35,80 @@ function MadeWordmark({ color }: { color: string }) {
   );
 }
 
+const colorizeSvg = (svgRaw: string) =>
+  svgRaw
+    .replace(/\sfill="(?!none|transparent|currentColor)[^"]*"/gi, ' fill="currentColor"')
+    .replace(/\sstroke="(?!none|transparent|currentColor)[^"]*"/gi, ' stroke="currentColor"')
+    .replace(/fill:\s*(?!none|transparent|currentColor)[^;"}]+/gi, 'fill: currentColor')
+    .replace(/stroke:\s*(?!none|transparent|currentColor)[^;"}]+/gi, 'stroke: currentColor')
+    .replace(
+      /<svg([^>]*)>/,
+      '<svg$1 style="width: 100%; height: auto;" role="img" aria-hidden="true">'
+    );
+
+function WordmarkSvg({ color }: { color: string }) {
+  const svgHtml = colorizeSvg(wordmarkSvgRaw);
+
+  return (
+    <div
+      className="mx-auto max-w-7xl mb-1 md:mb-2"
+      style={{ color }}
+      dangerouslySetInnerHTML={{ __html: svgHtml }}
+    />
+  );
+}
+
+function HeroHeadingSvg({ color }: { color: string }) {
+  const svgHtml = colorizeSvg(heroHeadingSvgRaw);
+
+  return (
+    <div
+      className="mx-auto max-w-7xl mb-5 md:mb-6"
+      style={{ color }}
+      dangerouslySetInnerHTML={{ __html: svgHtml }}
+    />
+  );
+}
+
 interface ColorScheme {
   bg: string;
   text: string;
 }
 
 const colorSchemes: ColorScheme[] = [
-  { bg: '#081d83', text: '#FFFFFF' },
-  { bg: '#000000', text: '#00ff89' },
-  { bg: '#f1a2e4', text: '#dd3021' },
-  { bg: '#dd3021', text: '#000000' },
-  { bg: '#ffff89', text: '#f1a2e4' },
-  { bg: '#00ff89', text: '#000000' },
+  { bg: '#0A289C', text: '#F9F6E3' },
+  { bg: '#FF98EC', text: '#F10000' },
+  { bg: '#10E086', text: '#FFF775' },
+  { bg: '#000000', text: '#F9F6E3' },
+  { bg: '#FFF775', text: '#000000' },
+  { bg: '#F10000', text: '#000000' },
+  { bg: '#262626', text: '#595959' },
+  { bg: '#F9F6E3', text: '#0A289C' },
 ];
 
-const heroInfoMonoFont = "'OCR-B', 'OCR B', 'Courier Prime', monospace";
+const heroInfoMonoFont = "'ABCFavoritMono', monospace";
+const heroDateFont = "'ABCGaisyr-Light', sans-serif";
 const heroDisplayFont = "'Enigma-EnigmaLargeRoman', serif";
-const bodyCopyClass = 'text-[11px] md:text-xs';
-const heroHeadingWrapClass = 'w-full text-center mt-16 md:mt-32 lg:mt-36';
-const heroHeadingClass =
-  'mx-auto max-w-[88vw] sm:max-w-[90vw] md:max-w-[94vw] text-[2.65rem] sm:text-[3.75rem] md:text-[5.9rem] lg:text-[6.9rem] xl:text-[8rem] 2xl:text-[9.4rem] tracking-tight leading-[0.86] mb-5 md:mb-6';
-const heroContactButtonClass =
-  `mt-10 sm:mt-6 md:mt-8 w-full sm:w-auto px-6 md:px-8 py-2 border-2 rounded-full ${bodyCopyClass} tracking-widest`;
+const utilityMonoClass = 'text-[13px] md:text-sm';
+const serifBodyClass = 'text-[15px] md:text-[17px]';
+const heroTaglineClass = utilityMonoClass;
+const heroHeadingWrapClass = 'w-full max-w-7xl mx-auto text-center mt-44 md:mt-10 lg:mt-12';
 
 function Footer({ textColor }: { textColor: string }) {
   return (
-    <footer className="relative z-10 py-10 md:py-16 mt-10 md:mt-16">
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-8 grid gap-6 md:gap-10 md:grid-cols-2 md:items-end">
+    <footer className="relative z-10 py-10 md:py-12 mt-10 md:mt-8">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-8 grid gap-6 md:gap-12 md:grid-cols-2 md:items-end">
         {/* Left */}
         <div
-          className={`order-2 md:order-1 flex items-baseline gap-6 md:gap-12 flex-wrap md:justify-start mt-2 md:mt-0 ${bodyCopyClass}`}
+          className={`order-2 md:order-1 flex items-baseline gap-6 md:gap-12 flex-wrap md:justify-start mt-2 md:mt-0 ${utilityMonoClass}`}
           style={{
             color: textColor,
-            fontFamily: "'OCR-B', 'OCR B', monospace",
+            fontFamily: heroInfoMonoFont,
             letterSpacing: "0.02em",
           }}
         >
-          <a href="mailto:hello@enigma.net.au" className="hover:opacity-80 transition-opacity">Contact</a>
-          <a href="/privacy-policy.html" target="_blank" rel="noreferrer" className="hover:opacity-80 transition-opacity">Privacy Policy</a>
+          <a href="mailto:hello@enigma.net.au" className="hover:opacity-80 transition-opacity">CONTACT</a>
+          <a href="/privacy-policy.html" target="_blank" rel="noreferrer" className="hover:opacity-80 transition-opacity">PRIVACY POLICY</a>
           <span className="inline-flex items-baseline gap-[0.18em]">
             <span className="text-[1em] leading-none">&copy;</span>
             <span className="text-[1em] leading-none">2026</span>
@@ -81,12 +117,11 @@ function Footer({ textColor }: { textColor: string }) {
 
         {/* Right */}
         <div
-          className={`order-1 md:order-2 max-w-[620px] md:max-w-none ${bodyCopyClass}`}
+          className={`order-1 md:order-2 max-w-[620px] md:max-w-none ${serifBodyClass}`}
           style={{
             color: textColor,
-            fontFamily: "'OCR-B', 'OCR B', monospace",
-            lineHeight: 1.55,
-            letterSpacing: "0.02em",
+            fontFamily: heroDateFont,
+            lineHeight: 1.28,
             opacity: 0.9,
           }}
         >
@@ -107,7 +142,6 @@ export default function App() {
   const [hasDesktopLens, setHasDesktopLens] = useState(false);
   const [currentSchemeIndex, setCurrentSchemeIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isHeroButtonActive, setIsHeroButtonActive] = useState(false);
   const [isSubmitButtonActive, setIsSubmitButtonActive] = useState(false);
   const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
 
@@ -214,30 +248,34 @@ export default function App() {
           >
             {/* Hero Section */}
             <div className="min-h-screen flex flex-col py-8 md:py-0">
-              <div className="relative flex flex-col items-center justify-center flex-1 px-4 md:px-8">
+              <div className="relative flex flex-col items-center justify-start flex-1 pt-1 px-4 md:pt-2 md:px-8">
+                <div className="absolute top-4 md:top-8 left-0 right-0 mx-auto w-full max-w-7xl z-10">
+                  <WordmarkSvg color={scheme.text} />
+                </div>
+
                 {/* Date and Tagline */}
-                <div className="absolute top-4 md:top-8 left-4 md:left-8 right-4 md:right-8">
+                <div className="absolute top-20 md:top-24 left-0 right-0 mx-auto w-full max-w-7xl z-0">
                   {/* Desktop: date | tagline | countdown on one line */}
                   <div className="hidden md:grid grid-cols-3 items-start">
                     <span
-                      className="tracking-wider md:text-[37px]"
-                      style={{ color: scheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                      className="tracking-wider md:text-[39px]"
+                      style={{ color: scheme.text, fontFamily: heroDateFont }}
                     >
                       {LAUNCH_DATE_LABEL}
                     </span>
 
                     <div
-                      className={`mt-3 ${bodyCopyClass} text-center mx-auto max-w-[24rem]`}
-                    style={{ color: scheme.text, fontFamily: "'OCR-B', 'OCR B', monospace" }}
+                      className={`mt-3 ${heroTaglineClass} text-center mx-auto max-w-[24rem]`}
+                    style={{ color: scheme.text, fontFamily: heroInfoMonoFont }}
                     >
-                      We'll be right back.
+                      WE'LL BE RIGHT BACK.
                       <br />
-                      A new chapter is under construction.
+                      A NEW ENIGMA IS UNDER CONSTRUCTION.
                     </div>
 
                     <span
-                      className="tracking-wider md:text-[37px] text-right"
-                      style={{ color: scheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                      className="tracking-wider md:text-[39px] text-right"
+                      style={{ color: scheme.text, fontFamily: heroDateFont }}
                     >
                       {countdown}
                     </span>
@@ -248,73 +286,41 @@ export default function App() {
                     <div className="flex items-start justify-between">
                       <span
                         className="tracking-wider text-lg"
-                        style={{ color: scheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                        style={{ color: scheme.text, fontFamily: heroDateFont }}
                       >
                         {LAUNCH_DATE_LABEL}
                       </span>
                       <span
                         className="tracking-wider text-lg text-right"
-                        style={{ color: scheme.text, fontFamily: "'Enigma-EnigmaLargeRoman', serif" }}
+                        style={{ color: scheme.text, fontFamily: heroDateFont }}
                       >
                         {countdown}
                       </span>
                     </div>
 
                     <div
-                      className="mt-4 text-[10px] text-center mx-auto max-w-[24rem]"
+                      className="mt-4 text-[13px] text-center mx-auto max-w-[24rem]"
                     style={{ color: scheme.text, fontFamily: "'OCR-B', 'OCR B', monospace" }}
                     >
-                      We'll be right back.
+                      WE'LL BE RIGHT BACK.
                       <br />
-                      A new chapter is under construction.
+                      A NEW ENIGMA IS UNDER CONSTRUCTION.
                     </div>
                   </div>
                 </div>
 
                 {/* Main Heading */}
                 <div className={heroHeadingWrapClass}>
-                  <h1
-                    className={heroHeadingClass}
-                    style={{ 
-                      color: scheme.text,
-                      fontFamily: "'Enigma-EnigmaLargeRoman', serif"
-                    }}
-                  >
-                    UNIGNORABLE
-                    <br />
-                    <span className="block">WORK</span>
-                    <span className="block italic">
-                      <MadeWordmark color={scheme.text} /> <AnimatedWord color={scheme.text} />
-                    </span>
-                    <span className="block">UNIGNORABLE</span>
-                    <span className="block">PEOPLE</span>
-                  </h1>
-
-                  <HoverFadeButton
-                    active={isHeroButtonActive}
-                    className={heroContactButtonClass}
-                    baseBackgroundColor="transparent"
-                    baseBorderColor={scheme.text}
-                    baseTextColor={scheme.text}
-                    hoverBackgroundColor={scheme.text}
-                    hoverBorderColor={scheme.text}
-                    hoverTextColor={scheme.bg}
-                    onActiveChange={setIsHeroButtonActive}
-                    style={{
-                      fontFamily: "'OCR-B', 'OCR B', monospace"
-                    }}
-                  >
-                    CONTACT
-                  </HoverFadeButton>
+                  <HeroHeadingSvg color={scheme.text} />
                 </div>
               </div>
             </div>
 
             {/* Spacer between hero CTA and contact section */}
-            <div className="h-32 md:h-52" />
+            <div className="h-24 md:h-28" />
 
             {/* Contact Section */}
-            <div id="contact" className="py-12 md:py-16 px-4 md:px-8">
+            <div id="contact" className="py-12 md:py-8 px-4 md:px-8">
               <ContactForm
                 backgroundColor={scheme.bg}
                 textColor={scheme.text}
@@ -545,35 +551,6 @@ export default function App() {
     }, 800);
   };
 
-  const scrollToContact = (e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    if (!contactRef.current) return;
-
-    const startY = window.scrollY;
-    const targetY = contactRef.current.getBoundingClientRect().top + window.scrollY;
-    const distance = targetY - startY;
-    const duration = 1600; // slower than native smooth scroll
-    const startTime = performance.now();
-
-    const easeInOutCubic = (t: number) =>
-      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-    const step = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = easeInOutCubic(progress);
-
-      window.scrollTo(0, startY + distance * eased);
-
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      }
-    };
-
-    requestAnimationFrame(step);
-  };
-
   return (
     <div
       className={`relative w-full min-h-screen overflow-y-auto overflow-x-hidden transition-colors duration-500 ease-out ${
@@ -585,78 +562,83 @@ export default function App() {
       {/* Hero Section */}
       <div className="h-screen flex flex-col">
         {/* Main Content - Current Color Scheme */}
-        <div ref={contentRef} className="relative z-10 flex flex-col items-center justify-center h-full px-4 md:px-8">
-          {/* Date and Tagline */}
-          <div className="absolute top-4 md:top-8 left-4 md:left-8 right-4 md:right-8">
-            <div className="hidden md:grid grid-cols-3 items-start">
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="tracking-wider md:text-[37px] transition-colors duration-500 ease-out"
-                style={{ color: currentScheme.text, fontFamily: heroDisplayFont }}
-              >
-                {LAUNCH_DATE_LABEL}
-              </motion.span>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className={`mt-3 ${bodyCopyClass} text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out`}
-                style={{ color: currentScheme.text, fontFamily: heroInfoMonoFont }}
-              >
-                We'll be right back.
-                <br />
-                A new chapter is under construction.
-              </motion.div>
-
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="tracking-wider md:text-[37px] text-right transition-colors duration-500 ease-out"
-                style={{ color: currentScheme.text, fontFamily: heroDisplayFont }}
-              >
-                {countdown}
-              </motion.span>
+        <div ref={contentRef} className="relative z-10 flex flex-col items-center justify-start h-full pt-0.5 px-4 md:pt-1 md:px-8">
+          <div className="w-full max-w-7xl">
+            <div className="mt-0.5 md:mt-1">
+              <WordmarkSvg color={currentScheme.text} />
             </div>
 
-            {/* Mobile: date + countdown row, tagline underneath centred */}
-            <div className="md:hidden w-full max-w-xs mx-auto">
-              <div className="flex items-start justify-between">
+            {/* Date and Tagline */}
+            <div className="mt-0">
+              <div className="hidden md:grid grid-cols-3 items-start">
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="tracking-wider text-lg transition-colors duration-500 ease-out"
-                  style={{ color: currentScheme.text, fontFamily: heroDisplayFont }}
+                  className="tracking-wider md:text-[39px] transition-colors duration-500 ease-out"
+                  style={{ color: currentScheme.text, fontFamily: heroDateFont }}
                 >
                   {LAUNCH_DATE_LABEL}
                 </motion.span>
 
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className={`mt-2 ${heroTaglineClass} text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out`}
+                  style={{ color: currentScheme.text, fontFamily: heroInfoMonoFont }}
+                >
+                  WE'LL BE RIGHT BACK.
+                  <br />
+                  A NEW ENIGMA IS UNDER CONSTRUCTION.
+                </motion.div>
+
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="tracking-wider text-lg text-right transition-colors duration-500 ease-out"
-                  style={{ color: currentScheme.text, fontFamily: heroDisplayFont }}
+                  className="tracking-wider md:text-[39px] text-right transition-colors duration-500 ease-out"
+                  style={{ color: currentScheme.text, fontFamily: heroDateFont }}
                 >
                   {countdown}
                 </motion.span>
               </div>
 
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="mt-4 text-[10px] text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
-                style={{ color: currentScheme.text, fontFamily: heroInfoMonoFont }}
-              >
-                We'll be right back.
-                <br />
-                A new chapter is under construction.
-              </motion.div>
+              <div className="md:hidden w-full max-w-xs mx-auto">
+                <div className="flex items-start justify-between">
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="tracking-wider text-lg transition-colors duration-500 ease-out"
+                    style={{ color: currentScheme.text, fontFamily: heroDateFont }}
+                  >
+                    {LAUNCH_DATE_LABEL}
+                  </motion.span>
+
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="tracking-wider text-lg text-right transition-colors duration-500 ease-out"
+                    style={{ color: currentScheme.text, fontFamily: heroDateFont }}
+                  >
+                    {countdown}
+                  </motion.span>
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="mt-2 text-[13px] text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                  style={{ color: currentScheme.text, fontFamily: heroInfoMonoFont }}
+                >
+                  WE'LL BE RIGHT BACK.
+                  <br />
+                  A NEW ENIGMA IS UNDER CONSTRUCTION.
+                </motion.div>
+              </div>
             </div>
           </div>
 
@@ -667,52 +649,19 @@ export default function App() {
             transition={{ duration: 0.6 }}
             className={heroHeadingWrapClass}
           >
-            <h1
-              className={`${heroHeadingClass} transition-colors duration-500 ease-out`}
-              style={{ 
-                color: currentScheme.text,
-                fontFamily: heroDisplayFont
-              }}
-            >
-              UNIGNORABLE
-              <br />
-              <span className="block">WORK</span>
-              <span className="block italic">
-                <MadeWordmark color={currentScheme.text} /> <AnimatedWord color={currentScheme.text} />
-              </span>
-              <span className="block">UNIGNORABLE</span>
-              <span className="block">PEOPLE</span>
-            </h1>
-
-            <HoverFadeButton
-              active={isHeroButtonActive}
-              className={heroContactButtonClass}
-              baseBackgroundColor="transparent"
-              baseBorderColor={currentScheme.text}
-              baseTextColor={currentScheme.text}
-              hoverBackgroundColor={currentScheme.text}
-              hoverBorderColor={currentScheme.text}
-              hoverTextColor={currentScheme.bg}
-              onActiveChange={setIsHeroButtonActive}
-              style={{
-                fontFamily: heroInfoMonoFont
-              }}
-              onClick={scrollToContact}
-            >
-              CONTACT
-            </HoverFadeButton>
+            <HeroHeadingSvg color={currentScheme.text} />
           </motion.div>
         </div>
       </div>
 
       {/* Spacer between hero CTA and contact section */}
-      <div className="h-32 md:h-52" />
+      <div className="h-24 md:h-28" />
 
       {/* Contact Section - Current Color Scheme */}
       <div
         id="contact"
         ref={contactRef}
-        className="relative z-10 py-12 md:py-16 px-4 md:px-8"
+        className="relative z-10 py-12 md:py-8 px-4 md:px-8"
       >
         <ContactForm
           backgroundColor={currentScheme.bg}
@@ -751,103 +700,77 @@ export default function App() {
             >
               {/* Hero Section Preview */}
               <div className="h-screen flex flex-col">
-                <div className="relative flex flex-col items-center justify-center h-full px-4 md:px-8">
-                  {/* Date and Tagline - Preview */}
-                  <div className="absolute top-4 md:top-8 left-4 md:left-8 right-4 md:right-8">
-                    <div className="hidden md:grid grid-cols-3 items-start">
-                      <span
-                        className="tracking-wider md:text-[37px] transition-colors duration-500 ease-out"
-                        style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
-                      >
-                        {LAUNCH_DATE_LABEL}
-                      </span>
-
-                      <div
-                        className={`mt-3 ${bodyCopyClass} text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out`}
-                        style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
-                      >
-                        We'll be right back.
-                        <br />
-                        A new chapter is under construction.
-                      </div>
-
-                      <span
-                        className="tracking-wider md:text-[37px] text-right transition-colors duration-500 ease-out"
-                        style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
-                      >
-                        {countdown}
-                      </span>
+                <div className="relative flex flex-col items-center justify-start h-full pt-0.5 px-4 md:pt-1 md:px-8">
+                  <div className="w-full max-w-7xl">
+                    <div className="mt-0.5 md:mt-1">
+                      <WordmarkSvg color={nextScheme.text} />
                     </div>
 
-                    <div className="md:hidden w-full max-w-xs mx-auto">
-                      <div className="flex items-start justify-between">
+                    {/* Date and Tagline - Preview */}
+                    <div className="mt-0">
+                      <div className="hidden md:grid grid-cols-3 items-start">
                         <span
-                          className="tracking-wider text-lg transition-colors duration-500 ease-out"
-                          style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
+                          className="tracking-wider md:text-[39px] transition-colors duration-500 ease-out"
+                          style={{ color: nextScheme.text, fontFamily: heroDateFont }}
                         >
                           {LAUNCH_DATE_LABEL}
                         </span>
+
+                        <div
+                          className={`mt-2 ${heroTaglineClass} text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out`}
+                          style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
+                        >
+                          WE'LL BE RIGHT BACK.
+                          <br />
+                          A NEW ENIGMA IS UNDER CONSTRUCTION.
+                        </div>
+
                         <span
-                          className="tracking-wider text-lg text-right transition-colors duration-500 ease-out"
-                          style={{ color: nextScheme.text, fontFamily: heroDisplayFont }}
+                          className="tracking-wider md:text-[39px] text-right transition-colors duration-500 ease-out"
+                          style={{ color: nextScheme.text, fontFamily: heroDateFont }}
                         >
                           {countdown}
                         </span>
                       </div>
 
-                      <div
-                        className="mt-4 text-[10px] text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
-                        style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
-                      >
-                        We'll be right back.
-                        <br />
-                        A new chapter is under construction.
+                      <div className="md:hidden w-full max-w-xs mx-auto">
+                        <div className="flex items-start justify-between">
+                          <span
+                            className="tracking-wider text-lg transition-colors duration-500 ease-out"
+                            style={{ color: nextScheme.text, fontFamily: heroDateFont }}
+                          >
+                            {LAUNCH_DATE_LABEL}
+                          </span>
+                          <span
+                            className="tracking-wider text-lg text-right transition-colors duration-500 ease-out"
+                            style={{ color: nextScheme.text, fontFamily: heroDateFont }}
+                          >
+                            {countdown}
+                          </span>
+                        </div>
+
+                        <div
+                          className="mt-2 text-[13px] text-center mx-auto max-w-[24rem] transition-colors duration-500 ease-out"
+                          style={{ color: nextScheme.text, fontFamily: heroInfoMonoFont }}
+                        >
+                          WE'LL BE RIGHT BACK.
+                          <br />
+                          A NEW ENIGMA IS UNDER CONSTRUCTION.
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Main Heading */}
-                  <div className={heroHeadingWrapClass}>
-                    <h1
-                      className={`${heroHeadingClass} transition-colors duration-500 ease-out`}
-                      style={{
-                        color: nextScheme.text,
-                        fontFamily: heroDisplayFont,
-                      }}
-                    >
-                      UNIGNORABLE
-                      <br />
-                      <span className="block">WORK</span>
-                      <span className="block italic">
-                        <MadeWordmark color={nextScheme.text} /> <AnimatedWord color={nextScheme.text} />
-                      </span>
-                      <span className="block">UNIGNORABLE</span>
-                      <span className="block">PEOPLE</span>
-                    </h1>
-
-                    <HoverFadeButton
-                      active={isHeroButtonActive}
-                      className={heroContactButtonClass}
-                      baseBackgroundColor="transparent"
-                      baseBorderColor={nextScheme.text}
-                      baseTextColor={nextScheme.text}
-                      hoverBackgroundColor={nextScheme.text}
-                      hoverBorderColor={nextScheme.text}
-                      hoverTextColor={nextScheme.bg}
-                      onActiveChange={setIsHeroButtonActive}
-                      style={{
-                        fontFamily: heroInfoMonoFont,
-                      }}
-                    >
-                      CONTACT
-                    </HoverFadeButton>
+                    {/* Main Heading */}
+                    <div className={heroHeadingWrapClass}>
+                      <HeroHeadingSvg color={nextScheme.text} />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="h-32 md:h-52" />
+              <div className="h-24 md:h-28" />
 
-              <div className="py-16 px-4 md:px-8">
+              <div className="py-12 md:py-8 px-4 md:px-8">
                 <ContactForm
                   formId="contact-form-preview"
                   isPreview

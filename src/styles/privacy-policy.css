@@ -5,11 +5,11 @@
 }
 
 :root {
-  --bg: #081d83;
-  --panel: #0e2aa5;
-  --text: #ffffff;
-  --muted: rgba(255, 255, 255, 0.78);
-  --rule: rgba(255, 255, 255, 0.22);
+  --bg: #0A289C;
+  --panel: #1336C0;
+  --text: #F9F6E3;
+  --muted: rgba(249, 246, 227, 0.78);
+  --rule: rgba(249, 246, 227, 0.22);
 }
 
 * {
@@ -19,8 +19,8 @@
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.08), transparent 28%),
-    linear-gradient(180deg, #081d83 0%, #05145d 100%);
+    radial-gradient(circle at top right, rgba(249, 246, 227, 0.08), transparent 28%),
+    linear-gradient(180deg, #0A289C 0%, #071D71 100%);
   color: var(--text);
   font-family: 'OCR-B', 'Courier Prime', monospace;
 }

@@ -1,12 +1,14 @@
 import { StaticColorScheme } from './components/StaticColorScheme';
 
 const colorSchemes = [
-  { bg: '#081d83', text: '#FFFFFF' },
-  { bg: '#000000', text: '#00ff89' },
-  { bg: '#f1a2e4', text: '#dd3021' },
-  { bg: '#dd3021', text: '#000000' },
-  { bg: '#ffff89', text: '#f1a2e4' },
-  { bg: '#00ff89', text: '#000000' },
+  { bg: '#0A289C', text: '#F9F6E3' },
+  { bg: '#FF98EC', text: '#F10000' },
+  { bg: '#10E086', text: '#FFF775' },
+  { bg: '#000000', text: '#F9F6E3' },
+  { bg: '#FFF775', text: '#000000' },
+  { bg: '#F10000', text: '#000000' },
+  { bg: '#262626', text: '#595959' },
+  { bg: '#F9F6E3', text: '#0A289C' },
 ];
 
 export default function Showcase() {

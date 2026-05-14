@@ -25,7 +25,7 @@ export function StaticColorScheme({ bg, text }: StaticColorSchemeProps) {
               01.04.26
             </span>
             <div
-              className="text-xs text-center max-w-[24rem]"
+              className="text-[13px] md:text-sm text-center max-w-[24rem]"
               style={{ color: text, fontFamily: "'Courier Prime', 'OCR B', 'Courier New', monospace" }}
             >
               We'll be right back.
@@ -60,7 +60,7 @@ export function StaticColorScheme({ bg, text }: StaticColorSchemeProps) {
             </h1>
 
             <HoverFadeButton
-              className="mt-8 px-6 py-2 border rounded-full text-sm tracking-wider"
+              className="mt-8 px-6 py-2 border rounded-full text-[13px] md:text-sm tracking-wider"
               baseBackgroundColor="transparent"
               baseBorderColor={text}
               baseTextColor={text}
