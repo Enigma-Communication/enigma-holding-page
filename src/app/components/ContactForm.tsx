@@ -503,7 +503,7 @@ export function ContactForm({
               active={submitButtonActive}
               type={isPreview ? 'button' : 'submit'}
               tabIndex={isPreview ? -1 : undefined}
-              className={`px-6 md:px-8 py-2 border-2 rounded-full ${utilityMonoClass} tracking-widest w-full sm:w-auto`}
+              className={`mt-2 sm:mt-0 px-6 md:px-8 py-2 border-2 rounded-full ${utilityMonoClass} tracking-widest w-full sm:w-auto`}
               baseBackgroundColor="transparent"
               baseBorderColor={borderColor}
               baseTextColor={textColor}
