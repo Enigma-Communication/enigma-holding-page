@@ -42,6 +42,14 @@ const colorizeSvg = (svgRaw: string) =>
     .replace(/fill:\s*(?!none|transparent|currentColor)[^;"}]+/gi, 'fill: currentColor')
     .replace(/stroke:\s*(?!none|transparent|currentColor)[^;"}]+/gi, 'stroke: currentColor')
     .replace(
+      /<(path|circle|ellipse|polygon|polyline|rect|line)\b((?:(?!\sfill=)[^>])*)\/?>/gi,
+      (match, tag, attrs) => {
+        if (/\sfill=/.test(match)) return match;
+        if (/\/>$/.test(match)) return `<${tag}${attrs} fill="currentColor" />`;
+        return `<${tag}${attrs} fill="currentColor">`;
+      }
+    )
+    .replace(
       /<svg([^>]*)>/,
       '<svg$1 style="width: 100%; height: auto;" role="img" aria-hidden="true">'
     );
@@ -63,7 +71,7 @@ function HeroHeadingSvg({ color }: { color: string }) {
 
   return (
     <div
-      className="mx-auto max-w-7xl mb-0 md:mb-6"
+      className="mx-auto w-full max-w-7xl mb-0 md:mb-6 md:scale-[1.00] lg:scale-[1.03] origin-center"
       style={{ color }}
       dangerouslySetInnerHTML={{ __html: svgHtml }}
     />
@@ -92,7 +100,10 @@ const heroDisplayFont = "'Enigma-EnigmaLargeRoman', serif";
 const utilityMonoClass = 'text-[13px] md:text-sm';
 const serifBodyClass = 'text-[15px] md:text-[17px]';
 const heroTaglineClass = utilityMonoClass;
-const heroHeadingWrapClass = 'w-full max-w-7xl mx-auto text-center mt-auto pb-2 md:pb-0 md:mt-10 lg:mt-12';
+const heroHeadingWrapClass = 'w-full max-w-7xl mx-auto text-center mt-auto pb-2 md:pb-0 md:mt-4 lg:mt-6';
+const desktopHeroMetaRowClass = 'hidden md:grid md:grid-cols-[auto_1fr_auto] items-start';
+const desktopHeroDateClass = 'tracking-wider md:text-[35px] md:translate-x-4';
+const desktopHeroCountdownClass = 'tracking-wider md:text-[35px] text-right md:-translate-x-3';
 const mobileHeroMetaClass = 'md:hidden w-full';
 const mobileHeroTaglineClass = 'mt-4 text-[13px] text-center mx-auto max-w-[24rem]';
 
@@ -250,7 +261,7 @@ export default function App() {
           >
             {/* Hero Section */}
             <div className="min-h-screen flex flex-col py-8 md:py-0">
-              <div className="relative flex flex-col items-center justify-start min-h-screen pt-1 px-4 md:pt-2 md:px-8">
+              <div className="relative flex flex-col items-center justify-start min-h-screen pt-4 px-4 md:pt-2 md:px-8">
                 <div className="absolute top-4 md:top-8 left-0 right-0 mx-auto w-full max-w-7xl z-10">
                   <WordmarkSvg color={scheme.text} />
                 </div>
@@ -258,9 +269,9 @@ export default function App() {
                 {/* Date and Tagline */}
                 <div className="absolute top-20 md:top-24 left-0 right-0 mx-auto w-full max-w-7xl z-0">
                   {/* Desktop: date | tagline | countdown on one line */}
-                  <div className="hidden md:grid grid-cols-3 items-start">
+                  <div className={desktopHeroMetaRowClass}>
                     <span
-                      className="tracking-wider md:text-[35px]"
+                      className={desktopHeroDateClass}
                       style={{ color: scheme.text, fontFamily: heroDateFont }}
                     >
                       {LAUNCH_DATE_LABEL}
@@ -276,7 +287,7 @@ export default function App() {
                     </div>
 
                     <span
-                      className="tracking-wider md:text-[35px] text-right"
+                      className={desktopHeroCountdownClass}
                       style={{ color: scheme.text, fontFamily: heroDateFont }}
                     >
                       {countdown}
@@ -566,7 +577,7 @@ export default function App() {
       {/* Hero Section */}
       <div className="min-h-screen flex flex-col">
         {/* Main Content - Current Color Scheme */}
-        <div ref={contentRef} className="relative z-10 flex flex-col items-center justify-start min-h-screen pt-0.5 px-4 md:pt-1 md:px-8">
+        <div ref={contentRef} className="relative z-10 flex flex-col items-center justify-start min-h-screen pt-4 px-4 md:pt-1 md:px-8">
           <div className="w-full max-w-7xl flex flex-col flex-1">
             <div className="mt-0.5 md:mt-1">
               <WordmarkSvg color={currentScheme.text} />
@@ -574,12 +585,12 @@ export default function App() {
 
             {/* Date and Tagline */}
             <div className="mt-0">
-              <div className="hidden md:grid grid-cols-3 items-start">
+              <div className={desktopHeroMetaRowClass}>
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="tracking-wider md:text-[35px] transition-colors duration-500 ease-out"
+                  className={`${desktopHeroDateClass} transition-colors duration-500 ease-out`}
                   style={{ color: currentScheme.text, fontFamily: heroDateFont }}
                 >
                   {LAUNCH_DATE_LABEL}
@@ -601,7 +612,7 @@ export default function App() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="tracking-wider md:text-[35px] text-right transition-colors duration-500 ease-out"
+                  className={`${desktopHeroCountdownClass} transition-colors duration-500 ease-out`}
                   style={{ color: currentScheme.text, fontFamily: heroDateFont }}
                 >
                   {countdown}
@@ -703,7 +714,7 @@ export default function App() {
             >
               {/* Hero Section Preview */}
               <div className="min-h-screen flex flex-col">
-                <div className="relative flex flex-col items-center justify-start min-h-screen pt-0.5 px-4 md:pt-1 md:px-8">
+                <div className="relative flex flex-col items-center justify-start min-h-screen pt-4 px-4 md:pt-1 md:px-8">
                   <div className="w-full max-w-7xl flex flex-col flex-1">
                     <div className="mt-0.5 md:mt-1">
                       <WordmarkSvg color={nextScheme.text} />
@@ -711,9 +722,9 @@ export default function App() {
 
                     {/* Date and Tagline - Preview */}
                     <div className="mt-0">
-                      <div className="hidden md:grid grid-cols-3 items-start">
+                      <div className={desktopHeroMetaRowClass}>
                         <span
-                          className="tracking-wider md:text-[35px] transition-colors duration-500 ease-out"
+                          className={`${desktopHeroDateClass} transition-colors duration-500 ease-out`}
                           style={{ color: nextScheme.text, fontFamily: heroDateFont }}
                         >
                           {LAUNCH_DATE_LABEL}
@@ -729,7 +740,7 @@ export default function App() {
                         </div>
 
                         <span
-                          className="tracking-wider md:text-[35px] text-right transition-colors duration-500 ease-out"
+                          className={`${desktopHeroCountdownClass} transition-colors duration-500 ease-out`}
                           style={{ color: nextScheme.text, fontFamily: heroDateFont }}
                         >
                           {countdown}

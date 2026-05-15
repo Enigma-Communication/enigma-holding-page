@@ -458,13 +458,16 @@ export function ContactForm({
           ) : null}
 
           {/* Checkboxes and Submit */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 md:gap-8 pt-2 md:pt-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 md:gap-8 pt-0 md:pt-3">
             <div className="flex flex-wrap gap-4 md:gap-6">
               {locationOptions.map((location) => {
                 const checked = isChecked(location);
 
                 return (
-                  <label key={location} className="flex items-center gap-3 cursor-pointer">
+                  <label
+                    key={location}
+                    className={`flex items-center gap-3 cursor-pointer ${location === 'Newcastle' ? 'ml-32 sm:ml-0' : ''}`}
+                  >
                     <input
                       type="checkbox"
                       name="locationOption"
