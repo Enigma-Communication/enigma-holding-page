@@ -175,8 +175,6 @@ export function ContactForm({
         throw new Error('Netlify form submission failed');
       }
 
-      console.log('Form submitted:', payload);
-
       // Show success message, then fade back to the form
       setSubmitState('success');
       window.setTimeout(() => {
