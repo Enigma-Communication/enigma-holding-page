@@ -101,9 +101,9 @@ const utilityMonoClass = 'text-[13px] md:text-sm';
 const serifBodyClass = 'text-[15px] md:text-[17px]';
 const heroTaglineClass = utilityMonoClass;
 const heroHeadingWrapClass = 'w-full max-w-7xl mx-auto text-center mt-auto pb-2 md:pb-0 md:mt-4 lg:mt-6';
-const desktopHeroMetaRowClass = 'hidden md:grid md:grid-cols-[auto_1fr_auto] items-start';
-const desktopHeroDateClass = 'tracking-wider md:text-[35px] md:translate-x-4';
-const desktopHeroCountdownClass = 'tracking-wider md:text-[35px] text-right md:-translate-x-3';
+const desktopHeroMetaRowClass = 'hidden md:grid md:grid-cols-[12rem_1fr_12rem] items-start';
+const desktopHeroDateClass = 'tracking-wider md:text-[35px] md:translate-x-4 whitespace-nowrap';
+const desktopHeroCountdownClass = 'tracking-wider md:text-[35px] text-right md:-translate-x-6 whitespace-nowrap tabular-nums';
 const mobileHeroMetaClass = 'md:hidden w-full';
 const mobileHeroTaglineClass = 'mt-4 text-[13px] text-center mx-auto max-w-[24rem]';
 
