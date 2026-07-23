@@ -1,25 +1,24 @@
 import { useEffect, useState } from 'react';
-import carouselOne from '../../assets/Images/Carousel/Carousel1.avif';
-import carouselTwo from '../../assets/Images/Carousel/Carousel2.avif';
-import carouselThree from '../../assets/Images/Carousel/Carousel3.avif';
 
-const campaignSlides = [
-  {
-    src: carouselOne,
-    width: 2000,
-    height: 1041,
-  },
-  {
-    src: carouselTwo,
-    width: 3024,
-    height: 4032,
-  },
-  {
-    src: carouselThree,
-    width: 2048,
-    height: 1166,
-  },
-];
+const carouselImages = Object.entries(
+  import.meta.glob(
+    '../../assets/Images/Carousel/*.{avif,webp,png,jpg,jpeg}',
+    {
+      eager: true,
+      import: 'default',
+    }
+  )
+)
+  .sort(([firstPath], [secondPath]) => {
+    const firstFilename = firstPath.split('/').pop() ?? firstPath;
+    const secondFilename = secondPath.split('/').pop() ?? secondPath;
+
+    return firstFilename.localeCompare(secondFilename, undefined, {
+      numeric: true,
+      sensitivity: 'base',
+    });
+  })
+  .map(([, src]) => src as string);
 
 export function CampaignCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -28,8 +27,8 @@ export function CampaignCarousel() {
     let interval: number | undefined;
     let cancelled = false;
 
-    const preloadImages = campaignSlides.map(
-      ({ src }) =>
+    const preloadImages = carouselImages.map(
+      (src) =>
         new Promise<void>((resolve) => {
           const image = new Image();
           image.onload = () => resolve();
@@ -41,10 +40,10 @@ export function CampaignCarousel() {
     );
 
     Promise.all(preloadImages).then(() => {
-      if (cancelled || campaignSlides.length < 2) return;
+      if (cancelled || carouselImages.length < 2) return;
 
       interval = window.setInterval(() => {
-        setActiveIndex((index) => (index + 1) % campaignSlides.length);
+        setActiveIndex((index) => (index + 1) % carouselImages.length);
       }, 1000);
     });
 
@@ -54,20 +53,20 @@ export function CampaignCarousel() {
     };
   }, []);
 
+  if (carouselImages.length === 0) return null;
+
   return (
     <section className="campaign-carousel" aria-hidden="true">
-      {campaignSlides.map((slide, index) => (
+      {carouselImages.map((src, index) => (
         <div
-          key={slide.src}
+          key={src}
           className="campaign-carousel__slide"
           data-active={index === activeIndex}
         >
           <img
             className="campaign-carousel__image"
-            src={slide.src}
+            src={src}
             alt=""
-            width={slide.width}
-            height={slide.height}
             loading="eager"
             fetchPriority={index === 0 ? 'high' : 'auto'}
             decoding="async"
