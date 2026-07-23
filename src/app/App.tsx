@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ContactForm } from './components/ContactForm';
-import heroHeadingSvgRaw from '../assets/Images/hero-heading.svg?raw';
+import { CampaignCarousel } from './components/CampaignCarousel';
+import { IntroductionSection } from './components/IntroductionSection';
+import footerIllustrationSvgRaw from '../assets/Images/hero-heading.svg?raw';
 import wordmarkSvgRaw from '../assets/Images/Wordmark.svg?raw';
 
 function MadeWordmark({ color }: { color: string }) {
@@ -66,18 +68,6 @@ function WordmarkSvg({ color }: { color: string }) {
   );
 }
 
-function HeroHeadingSvg({ color }: { color: string }) {
-  const svgHtml = colorizeSvg(heroHeadingSvgRaw);
-
-  return (
-    <div
-      className="mx-auto w-full max-w-7xl mb-0 md:mb-6 md:scale-[1.00] lg:scale-[1.03] origin-center"
-      style={{ color }}
-      dangerouslySetInnerHTML={{ __html: svgHtml }}
-    />
-  );
-}
-
 interface ColorScheme {
   bg: string;
   text: string;
@@ -100,7 +90,7 @@ const heroDisplayFont = "'Enigma-EnigmaLargeRoman', serif";
 const utilityMonoClass = 'text-[13px] md:text-sm';
 const serifBodyClass = 'text-[15px] md:text-[17px]';
 const heroTaglineClass = utilityMonoClass;
-const heroHeadingWrapClass = 'w-full max-w-7xl mx-auto text-center mt-auto pb-2 md:pb-0 md:mt-4 lg:mt-6';
+const campaignCarouselWrapClass = 'w-full max-w-7xl mx-auto mt-5 md:mt-4 pb-4 md:pb-8';
 const desktopHeroMetaRowClass = 'hidden md:grid md:grid-cols-[12rem_1fr_12rem] items-start';
 const desktopHeroDateClass = 'tracking-wider md:text-[35px] md:translate-x-4 whitespace-nowrap';
 const desktopHeroCountdownClass = 'tracking-wider md:text-[35px] text-right md:-translate-x-6 whitespace-nowrap tabular-nums';
@@ -108,42 +98,41 @@ const mobileHeroMetaClass = 'md:hidden w-full';
 const mobileHeroTaglineClass = 'mt-4 text-[13px] text-center mx-auto max-w-[24rem]';
 
 function Footer({ textColor }: { textColor: string }) {
-  return (
-    <footer className="relative z-10 mt-16 md:mt-14 pt-8 md:pt-12 pb-10 md:pb-12">
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-8 grid gap-6 md:gap-12 md:grid-cols-2 md:items-end">
-        {/* Left */}
-        <div
-          className={`order-2 md:order-1 flex items-baseline gap-6 md:gap-12 flex-wrap md:justify-start mt-2 md:mt-0 ${utilityMonoClass}`}
-          style={{
-            color: textColor,
-            fontFamily: heroInfoMonoFont,
-            letterSpacing: "0.02em",
-          }}
-        >
-          <a href="mailto:hello@enigma.net.au" className="hover:opacity-80 transition-opacity">CONTACT</a>
-          <a href="/privacy-policy.html" target="_blank" rel="noreferrer" className="hover:opacity-80 transition-opacity">PRIVACY POLICY</a>
-          <span className="inline-flex items-baseline gap-[0.18em]">
-            <span className="text-[1em] leading-none">&copy;</span>
-            <span className="text-[1em] leading-none">2026</span>
-          </span>
-        </div>
+  const illustrationSvgHtml = colorizeSvg(footerIllustrationSvgRaw);
 
-        {/* Right */}
+  return (
+    <footer className="site-footer relative z-10" style={{ color: textColor }}>
+      <div className="site-footer__layout">
         <div
-          className={`order-1 md:order-2 max-w-[620px] md:max-w-none ${serifBodyClass}`}
-          style={{
-            color: textColor,
-            fontFamily: heroDateFont,
-            lineHeight: 1.28,
-            opacity: 0.9,
-          }}
-        >
-          We acknowledge the Traditional Custodians of the lands where we work and live. We celebrate the
-          diversity of Aboriginal peoples and their ongoing cultures and connections to the lands and
-          waters of NSW and QLD. We pay our respects to Elders past, present and emerging, and acknowledge
-          the Aboriginal and Torres Strait Islander people who contributed to the development of this
-          website. We advise this website may contain images, voices or names of deceased persons in
-          photographs, film, audio recordings or historical content.
+          className="site-footer__illustration"
+          aria-hidden="true"
+          dangerouslySetInnerHTML={{ __html: illustrationSvgHtml }}
+        />
+
+        <div className="site-footer__content">
+          <p className="site-footer__acknowledgement">
+            We acknowledge the Traditional Custodians of the lands where we work and live. We celebrate the
+            diversity of Aboriginal peoples and their ongoing cultures and connections to the lands and waters
+            of NSW and QLD. We pay our respects to Elders past, present and emerging, and acknowledge the
+            Aboriginal and Torres Strait Islander people who contributed to the development of this website. We
+            advise this website may contain images, voices or names of deceased persons in photographs, film,
+            audio recordings or historical content.
+          </p>
+
+          <div className="site-footer__links">
+            <a href="mailto:hello@enigma.net.au" className="hover:opacity-80 transition-opacity">
+              CONTACT
+            </a>
+            <a
+              href="/privacy-policy.html"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:opacity-80 transition-opacity"
+            >
+              PRIVACY POLICY
+            </a>
+            <span>&copy;2026</span>
+          </div>
         </div>
       </div>
     </footer>
@@ -323,13 +312,15 @@ export default function App() {
                 </div>
 
                 <div className="w-full max-w-7xl flex flex-col flex-1">
-                  {/* Main Heading */}
-                  <div className={heroHeadingWrapClass}>
-                    <HeroHeadingSvg color={scheme.text} />
+                  {/* Campaign carousel */}
+                  <div className={campaignCarouselWrapClass}>
+                    <CampaignCarousel />
                   </div>
                 </div>
               </div>
             </div>
+
+            <IntroductionSection textColor={scheme.text} />
 
             {/* Spacer between hero CTA and contact section */}
             <div className="h-16 sm:h-20 md:h-40 lg:h-48" />
@@ -655,18 +646,20 @@ export default function App() {
                 </motion.div>
               </div>
             </div>
-            {/* Main Heading */}
+            {/* Campaign carousel */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className={heroHeadingWrapClass}
+              className={campaignCarouselWrapClass}
             >
-              <HeroHeadingSvg color={currentScheme.text} />
+              <CampaignCarousel />
             </motion.div>
           </div>
         </div>
       </div>
+
+      <IntroductionSection textColor={currentScheme.text} />
 
       {/* Spacer between hero CTA and contact section */}
       <div className="h-16 sm:h-20 md:h-40 lg:h-48" />
@@ -697,6 +690,7 @@ export default function App() {
           <div
             ref={previewMaskRef}
             className="fixed inset-0 z-20 pointer-events-none"
+            aria-hidden="true"
             style={{
               backgroundColor: nextScheme.bg,
               clipPath: 'circle(0px at 0px 0px)',
@@ -775,12 +769,14 @@ export default function App() {
                     </div>
 
                     {/* Main Heading */}
-                    <div className={heroHeadingWrapClass}>
-                      <HeroHeadingSvg color={nextScheme.text} />
+                    <div className={campaignCarouselWrapClass}>
+                      <CampaignCarousel />
                     </div>
                   </div>
                 </div>
               </div>
+
+              <IntroductionSection textColor={nextScheme.text} />
 
               <div className="h-16 sm:h-20 md:h-40 lg:h-48" />
 
