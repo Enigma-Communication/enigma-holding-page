@@ -27,17 +27,25 @@ export function CampaignCarousel() {
     let interval: number | undefined;
     let cancelled = false;
 
-    const preloadImages = carouselImages.map(
-      (src) =>
-        new Promise<void>((resolve) => {
-          const image = new Image();
+    const preloadImages = carouselImages.map(async (src) => {
+      const image = new Image();
+      image.src = src;
+
+      if (!image.complete) {
+        await new Promise<void>((resolve) => {
           image.onload = () => resolve();
           image.onerror = () => resolve();
-          image.src = src;
+        });
+      }
 
-          if (image.complete) resolve();
-        })
-    );
+      if (image.naturalWidth === 0 || typeof image.decode !== 'function') return;
+
+      try {
+        await image.decode();
+      } catch {
+        // A failed decode should not prevent the remaining images from loading.
+      }
+    });
 
     Promise.all(preloadImages).then(() => {
       if (cancelled || carouselImages.length < 2) return;
