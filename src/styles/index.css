@@ -177,6 +177,10 @@
   opacity: 0.9;
 }
 
+.site-footer__acknowledgement + .site-footer__acknowledgement {
+  margin-top: 1.25rem;
+}
+
 .site-footer__links {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
