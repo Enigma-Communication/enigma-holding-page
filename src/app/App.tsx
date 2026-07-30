@@ -111,12 +111,13 @@ function Footer({ textColor }: { textColor: string }) {
 
         <div className="site-footer__content">
           <p className="site-footer__acknowledgement">
-            We acknowledge the Traditional Custodians of the lands where we work and live. We celebrate the
-            diversity of Aboriginal peoples and their ongoing cultures and connections to the lands and waters
-            of NSW and QLD. We pay our respects to Elders past, present and emerging, and acknowledge the
-            Aboriginal and Torres Strait Islander people who contributed to the development of this website. We
-            advise this website may contain images, voices or names of deceased persons in photographs, film,
-            audio recordings or historical content.
+            Enigma acknowledges Traditional Owners of Country throughout Australia and recognises the continuing
+            connection to lands, waters and communities. We pay our respects to Aboriginal and Torres Strait
+            Islander cultures; and to Elders past and present.
+          </p>
+          <p className="site-footer__acknowledgement">
+            Aboriginal and Torres Strait Islander peoples should be aware that this website may include references
+            to and images of deceased persons, as well as historical images that may be confronting.
           </p>
 
           <div className="site-footer__links">
