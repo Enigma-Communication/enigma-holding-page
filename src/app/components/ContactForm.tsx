@@ -254,7 +254,7 @@ export function ContactForm({
             className="text-[15px] leading-[1.26] md:text-[16px] md:leading-[1.24] max-w-md md:max-w-[30rem]"
             style={{ color: textColor, fontFamily: "'ABCGaisyr-Light', sans-serif" }}
           >
-            Interested in working together? Fill out some info and we will be in touch shortly. We can't wait to hear from you!
+            Interested in working together? Fill out some info and we will be in touch shortly.
           </p>
         </div>
 
