@@ -21,7 +21,7 @@ export function IntroductionSection({ textColor }: IntroductionSectionProps) {
           Unignorable.
         </p>
         <p>
-          Born over 30 years ago in the hardworking city Newcastle, and with a decade of established scale in
+          Born over 30 years ago in the hardworking city of Newcastle, and with a decade of established scale in
           Sydney, we&rsquo;re a diverse collective of some of the smartest and most experienced strategic, creative
           and media thinkers in Australia &ndash; united by a commitment to creating and growing Unignorable brands,
           and connecting them with customers in Unignorable ways.
